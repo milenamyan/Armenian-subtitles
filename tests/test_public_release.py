@@ -39,7 +39,7 @@ def imported(client):
 
 def test_public_home_and_all_owner_endpoints_are_protected():
     with TestClient(main.app,base_url=ORIGIN) as client:
-        assert 'id="public-search"' in client.get('/').text
+        assert '/static/public-catalog.js' in client.get('/').text
         assert '/static/admin-login.js' in client.get('/admin').text
         for path in ('/api/library','/api/videos','/api/config','/api/subtitle-files/unknown','/api/library/unknown/download','/docs','/openapi.json'):
             assert client.get(path).status_code==401
@@ -179,6 +179,7 @@ def test_server_source_package_never_contains_local_secrets_or_database(tmp_path
         assert '.env' not in names and '.env.example' in names
         assert not any('data/' in name or '.venv/' in name or '__pycache__' in name for name in names)
         assert 'Dockerfile' in names and 'app/public.py' in names
+        assert 'static/site-planet.png' in names
 
 
 @pytest.mark.parametrize('url',['http://real.net','https://localhost','https://127.0.0.1','https://example.com','https://user:secret@host.net','https://host.net/path','https://host.net?q=1'])
@@ -192,3 +193,24 @@ def test_removed_url_player_route_is_not_available():
         assert client.get('/player').status_code==404
         owner(client)
         assert client.get('/player').status_code==404
+
+
+def test_security_headers_cover_public_pages_and_denied_requests():
+    with TestClient(main.app,base_url=ORIGIN) as client:
+        for path in ('/', '/privacy', '/admin', '/api/library'):
+            response=client.get(path)
+            assert response.headers['X-Content-Type-Options']=='nosniff'
+            assert response.headers['Referrer-Policy']=='no-referrer'
+            assert "frame-ancestors 'self'" in response.headers['Content-Security-Policy']
+            assert response.headers['X-Frame-Options']=='SAMEORIGIN'
+            assert response.headers['Strict-Transport-Security']=='max-age=31536000'
+        assert client.get('/api/library').headers['Cache-Control']=='no-store'
+        denied=client.post('/api/admin/login',json={'token':PASSWORD})
+        assert denied.status_code==403
+        assert denied.headers['Cache-Control']=='no-store'
+
+
+@pytest.mark.parametrize('path',['/.env','/.git/config','/data/haysub.sqlite3','/static/../.env'])
+def test_private_files_are_not_served(path):
+    with TestClient(main.app,base_url=ORIGIN) as client:
+        assert client.get(path).status_code==404

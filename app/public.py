@@ -51,6 +51,21 @@ def authenticated(request):
 
 
 async def access_control(request, call_next):
+    response = await controlled_response(request, call_next)
+    path = request.url.path
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['Referrer-Policy'] = 'no-referrer'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['Content-Security-Policy'] = "frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+    response.headers['Permissions-Policy'] = 'camera=(), microphone=(), geolocation=()'
+    if path.startswith(('/api/', '/admin', '/preview/')):
+        response.headers['Cache-Control'] = 'no-store'
+    if public_mode():
+        response.headers['Strict-Transport-Security'] = 'max-age=31536000'
+    return response
+
+
+async def controlled_response(request, call_next):
     path = request.url.path
     if public_mode():
         # All existing APIs (including jobs, source files and caches) are owner-only.
@@ -66,14 +81,7 @@ async def access_control(request, call_next):
                 return JSONResponse({'detail':'Use the owner page on this server to make changes.'}, status_code=403)
         if path in ('/docs','/redoc','/openapi.json') and not authenticated(request):
             return JSONResponse({'detail':'Owner sign-in required.'},status_code=401)
-    response = await call_next(request)
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
-    if path.startswith('/api/') or path.startswith('/admin'):
-        response.headers['Cache-Control'] = 'no-store'
-    if public_mode():
-        response.headers['Strict-Transport-Security'] = 'max-age=31536000'
-    return response
+    return await call_next(request)
 
 
 class OwnerLogin(BaseModel):

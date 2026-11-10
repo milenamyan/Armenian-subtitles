@@ -89,6 +89,7 @@ def listed_videos():
     return [item for item in items if not (
         item['backend']==backend.identity and item['state']=='ready'
         and not item['external_video_url']
+        and not media_sources.cloud_selected(item['id'])
         and not backend.path(item['object_key']).is_file())]
 
 

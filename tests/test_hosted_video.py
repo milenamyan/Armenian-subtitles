@@ -269,7 +269,8 @@ def test_owner_authentication_csrf_and_anonymous_public_access(monkeypatch):
 def test_subtitle_snapshot_and_offset_do_not_change_shared_library_or_other_videos():
     with TestClient(main.app) as client:
         imported=client.post('/api/library/import',files={'subtitles':('Armenian.srt',SUB.encode())}).json()['id']
-        first=new(client)['id'];second=new(client)['id']
+        first=new(client)['id'];second=new(client,size=len(RAW)+1)['id']
+        assert first != second  # Identical uploads intentionally reuse one record.
         for identity in (first,second):assert client.post('/api/owner/media/'+identity+'/subtitles',data={'library_id':imported}).status_code==200
         before=storage.library_item(imported)['srt'];second_track=db.get(second)['subtitle_key']
         assert client.post('/api/owner/media/'+first+'/subtitles',data={'offset':'2'}).status_code==200

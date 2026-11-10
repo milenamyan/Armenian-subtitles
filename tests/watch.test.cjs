@@ -1,19 +1,18 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
-test('captions default to the bottom and height changes survive reload and replacement tracks',async()=>{
+test('caption height buttons persist changes across reload and replacement tracks',async()=>{
   const saved=new Map(),storage={getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)};
   const h=harness(200,false,true,false,false,{storage});await flush();
   const cue={line:50,snapToLines:false},track=h.$('hosted-player').textTracks[0];track.cues=[cue];
   await h.$('armenian-track').fire('load');
-  assert.equal(cue.line,-1);assert.equal(cue.snapToLines,true);
-  h.$('watch-subtitle-height').value='12';await h.$('watch-subtitle-height').fire('input');
+  assert.equal(cue.line,90);assert.equal(cue.snapToLines,false);
+  await h.$('watch-subtitle-up').fire('click');
   assert.equal(cue.line,88);assert.equal(cue.snapToLines,false);assert.equal(cue.lineAlign,'end');
-  assert.equal(h.$('watch-subtitle-height-value').textContent,'12%');
+  assert.equal(saved.get('haysub-subtitle-height-buttons'),'12');
   const restored=harness(200,false,true,false,false,{storage});await flush();
-  assert.equal(restored.$('watch-subtitle-height').value,'12');
   const replacement={};restored.$('hosted-player').textTracks[0].cues=[replacement];
   await restored.$('armenian-track').fire('load');assert.equal(replacement.line,88);
-  restored.$('watch-subtitle-height').value='0';await restored.$('watch-subtitle-height').fire('input');
+  for(let i=0;i<6;i++)await restored.$('watch-subtitle-down').fire('click');
   assert.equal(replacement.line,-1);assert.equal(replacement.snapToLines,true);
 });
 test('startup media errors stay in loading state; errors from the assigned media still surface',async()=>{

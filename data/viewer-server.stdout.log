@@ -309,3 +309,34 @@ INFO:     127.0.0.1:61009 - "GET /api/public/hosted/36ef9b0256f4480dae54c3f5fb21
 INFO:     127.0.0.1:61875 - "GET /api/public/hosted/3a12457ad17b4017bd61051188cd954c/poster HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51717 - "GET /api/public/hosted/a54ade7bced54ee8883339c1fbbd7606/poster HTTP/1.1" 200 OK
 INFO:     127.0.0.1:63212 - "GET /api/public/hosted/0e2e2128cc254b83a3fc8f6ab18ab791/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51074 - "GET /catalog HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51074 - "GET /static/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:57142 - "GET /static/viewer.css?v=posters-2x3 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:50666 - "GET /static/public-catalog.js?v=posters-2x3 HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:50666 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57142 - "GET /api/public/videos HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50666 - "GET /api/public/hosted/a54ade7bced54ee8883339c1fbbd7606/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57142 - "GET /api/public/hosted/36ef9b0256f4480dae54c3f5fb21d8cd/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51074 - "GET /api/public/hosted/3a12457ad17b4017bd61051188cd954c/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51526 - "GET /api/public/hosted/0e2e2128cc254b83a3fc8f6ab18ab791/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51526 - "GET /catalog HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51526 - "GET /api/public/videos HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51074 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51526 - "GET /api/public/hosted/a54ade7bced54ee8883339c1fbbd7606/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57142 - "GET /api/public/hosted/3a12457ad17b4017bd61051188cd954c/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50666 - "GET /api/public/hosted/0e2e2128cc254b83a3fc8f6ab18ab791/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51074 - "GET /api/public/hosted/36ef9b0256f4480dae54c3f5fb21d8cd/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62102 - "GET /catalog HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55100 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62102 - "GET /api/public/videos HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62102 - "GET /api/public/hosted/36ef9b0256f4480dae54c3f5fb21d8cd/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49842 - "GET /api/public/hosted/0e2e2128cc254b83a3fc8f6ab18ab791/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55100 - "GET /api/public/hosted/a54ade7bced54ee8883339c1fbbd7606/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63763 - "GET /api/public/hosted/3a12457ad17b4017bd61051188cd954c/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63763 - "GET /catalog HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63763 - "GET /api/public/videos HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63763 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63763 - "GET /api/public/hosted/36ef9b0256f4480dae54c3f5fb21d8cd/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62102 - "GET /api/public/hosted/0e2e2128cc254b83a3fc8f6ab18ab791/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55100 - "GET /api/public/hosted/a54ade7bced54ee8883339c1fbbd7606/poster HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49842 - "GET /api/public/hosted/3a12457ad17b4017bd61051188cd954c/poster HTTP/1.1" 200 OK

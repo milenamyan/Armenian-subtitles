@@ -43,6 +43,24 @@ def test_links_persist_and_public_title_opens_the_saved_video_without_copying_fi
         assert client.get('/api/public/hosted/'+item['id']+'/playback').json()['subtitle_url']==SUBTITLES
 
 
+def test_cloud_selected_video_stays_listed_without_local_file(isolated,monkeypatch):
+    import time
+    identity='b'*32
+    backend=type('Backend',(),{'identity':'local','path':lambda self,key:isolated/key})()
+    monkeypatch.setattr(stores,'store',lambda:backend)
+    monkeypatch.setenv('HAYSUB_MEDIA_STORAGE','local')
+    db.create(dict(id=identity,title='Cloud movie',size=1,fingerprint='fixture',backend='local',
+                   object_key='videos/missing.mp4',part_size=1,state='ready',created=time.time(),updated=time.time()))
+    db.update(identity,published=1)
+    with TestClient(main.app) as client:
+        assert client.get('/api/owner/media').json()==[]
+        monkeypatch.setenv('HAYSUB_CLOUD_VIDEO_IDS',identity)
+        for endpoint in ('/api/owner/media','/api/public/videos'):
+            assert [item['id'] for item in client.get(endpoint).json()]==[identity]
+        monkeypatch.setenv('HAYSUB_HIDDEN_VIDEO_IDS',identity)
+        assert client.get('/api/owner/media').json()==[]
+
+
 def test_saving_the_same_video_updates_its_title_and_links_without_duplicate_entries():
     with TestClient(main.app) as client:
         before=add(client)

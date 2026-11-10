@@ -61,7 +61,7 @@ def prepare_icons():
 
 def server_archive(output):
     files = [p for directory in ('app','static','scripts','docs') for p in (ROOT/directory).rglob('*')
-             if p.is_file() and '__pycache__' not in p.parts and p.suffix in ('.py','.js','.css','.html','.md','.json')]
+             if p.is_file() and '__pycache__' not in p.parts and p.suffix in ('.py','.js','.css','.html','.md','.json','.png','.jpg','.jpeg','.webp','.svg','.ico','.woff','.woff2')]
     files += [ROOT/name for name in ('Dockerfile','.dockerignore','render.yaml','requirements.txt','requirements.lock.txt','.env.example','.gitignore','README.md','start.py','Start HaySub.bat')]
     with ZipFile(output,'w',ZIP_DEFLATED) as archive:
         for path in files:
