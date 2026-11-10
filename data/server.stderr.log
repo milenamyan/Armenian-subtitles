@@ -1,8 +1,0 @@
-INFO:     Will watch for changes in these directories: ['C:\\Users\\Milena Mehrabyan\\Desktop\\Armenian-subtitles']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [34980] using StatReload
-INFO:     Started server process [42280]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-C:\Users\Milena Mehrabyan\Desktop\Armenian-subtitles\.venv\Lib\site-packages\fastapi\openapi\utils.py:295: UserWarning: Duplicate Operation ID dev_media_dev_media_head for function dev_media at C:\Users\Milena Mehrabyan\Desktop\Armenian-subtitles\app\media_api.py
-  warnings.warn(message, stacklevel=1)

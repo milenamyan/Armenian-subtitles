@@ -5,6 +5,7 @@ The durable importing state recovers a crash before/after the atomic move.
 """
 import hashlib
 import os
+from functools import lru_cache
 from pathlib import Path
 import sqlite3
 import time
@@ -13,6 +14,22 @@ from uuid import uuid4
 from app import media_db as db, media_store as stores
 
 EXTENSIONS={'.mp4','.m4v','.mov','.mkv','.webm','.avi'}
+
+
+@lru_cache(maxsize=256)
+def _same_video(first,first_size,first_modified,second,second_size,second_modified):
+    """Compare candidate copies before registering another movie card."""
+    if first_size!=second_size:return False
+    with first.open('rb') as left,second.open('rb') as right:
+        while True:
+            a=left.read(4*1024*1024)
+            if a!=right.read(4*1024*1024):return False
+            if not a:return True
+
+
+def same_video(first,second):
+    left=first.stat();right=second.stat()
+    return _same_video(first,left.st_size,left.st_mtime_ns,second,right.st_size,right.st_mtime_ns)
 
 
 def folder():
@@ -29,13 +46,19 @@ def scan():
         raise stores.StorageError('Choose a separate video inbox outside the managed media storage directory.')
     restored=local_library.sync_bin(backend) if flat else 0
     inbox.mkdir(parents=True,exist_ok=True);added=[];waiting=0;skipped=[]
-    known={backend.path(item['object_key']).resolve() for item in db.all_videos()} if flat else set()
+    known_items=[item for item in db.all_videos() if item['backend']==backend.identity
+                 and item['state'] not in ('bin','deleting') and not item['external_video_url']]
+    known={backend.path(item['object_key']).resolve() for item in known_items} if flat else set()
     for path in sorted(inbox.iterdir())[:200]:
         if path.resolve() in known:continue
         if path.is_symlink() or not path.is_file() or path.suffix.lower() not in EXTENSIONS:continue
         stat=path.stat()
         if not stat.st_size or time.time()-stat.st_mtime<3:waiting+=1;continue
         if stat.st_size>stores.upload_limit():skipped.append(path.name+' exceeds the configured video size limit.');continue
+        if any(same_video(path,backend.path(item['object_key'])) for item in known_items
+               if item['size']==stat.st_size and backend.path(item['object_key']).is_file()):
+            skipped.append(path.name+' is already in the library.')
+            continue
         identity=uuid4().hex;now=time.time()
         try:
             db.create(dict(id=identity,title=''.join(c for c in path.stem if ord(c)>=32)[:200] or 'HaySub',

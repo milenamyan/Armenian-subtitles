@@ -44,11 +44,11 @@ test('saved posters appear in the header after refreshing media',async()=>{
   assert.equal(form.children[1].dataset.saved,'true');
 });
 
-test('poster controls explain why Save is disabled before selecting an image',async()=>{
+test('poster controls keep Save disabled without a prompt before selecting an image',async()=>{
   const h=harness();await flush();
   const form=h.$('hosted-completed-videos').children[0].children[0].children[1];
   assert.equal(form.children[1].disabled,true);
-  assert.equal(form.children[3].textContent,'Նախ ընտրիր պաստառի նկարը։');
+  assert.equal(form.children[3].textContent,'');
   await form.fire('submit');
   assert.equal(h.calls.some(([path])=>path.endsWith('/poster')),false);
 });

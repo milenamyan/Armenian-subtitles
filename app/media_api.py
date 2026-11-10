@@ -82,8 +82,18 @@ def config():
         return {'configured':False,'setup_message':str(exc)}
 
 
+def listed_videos():
+    items=[item for item in db.all_videos() if not media_sources.hidden_from_lists(item['id'])]
+    if os.getenv('HAYSUB_MEDIA_STORAGE')!='local':return items
+    backend=stores.store()
+    return [item for item in items if not (
+        item['backend']==backend.identity and item['state']=='ready'
+        and not item['external_video_url']
+        and not backend.path(item['object_key']).is_file())]
+
+
 @router.get('/api/owner/media')
-def owner_list():return [summary(item) for item in db.all_videos() if not media_sources.hidden_from_lists(item['id'])]
+def owner_list():return [summary(item) for item in listed_videos()]
 
 
 @router.post('/api/owner/media/scan-local')
@@ -146,7 +156,7 @@ def save_cloud_video(body:CloudVideo):
 
 @router.get('/api/public/videos')
 def public_videos():
-    items=[item for item in db.all_videos() if item['published'] and item['state']=='ready' and not media_sources.hidden_from_lists(item['id'])]
+    items=[item for item in listed_videos() if item['published'] and item['state']=='ready']
     items.sort(key=lambda item:item['published_at'] or item['created'],reverse=True)
     return [dict(id=item['id'],title=item['title'],watch_url='/watch/'+item['id'],
                  has_subtitles=bool(item['external_subtitle_url'] or item['subtitle_key']),duration=item['duration'],
@@ -203,6 +213,15 @@ def create(body:NewVideo):
     except stores.StorageError as exc:raise HTTPException(503,str(exc)) from None
     if body.size>limit:raise HTTPException(413,f'Video exceeds the configured {limit} byte limit.')
     if math.ceil(body.size/part)>10000:raise HTTPException(400,'Increase the configured multipart part size for this file.')
+    # Reusing the same browser file should not create another video record.
+    for existing in db.all_videos():
+        if (existing['backend']==backend.identity and existing['size']==body.size
+                and existing['fingerprint']==body.fingerprint
+                and existing['state'] not in ('bin','deleting','error')):
+            if (local_library.enabled(backend) and existing['state']=='ready'
+                    and not backend.path(existing['object_key']).is_file()):
+                continue
+            return summary(existing)
     identity=uuid4().hex;key=stores.key_prefix(identity)+'source.mp4';now=time.time()
     item=dict(id=identity,title=clean_title(body.title),size=body.size,fingerprint=body.fingerprint,backend=backend.identity,object_key=key,part_size=part,state='allocating',created=now,updated=now)
     db.create(item)

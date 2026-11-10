@@ -82,7 +82,7 @@
     posterForm.className='hosted-poster-form';
     let editedPoster=null;
     const posterPreview=element('img');posterPreview.className='poster-preview';posterPreview.alt='Պաստառի նախադիտում';posterPreview.hidden=true;posterForm.append(posterPreview);
-    const posterStatus=element('p','Նախ ընտրիր պաստառի նկարը։','poster-save-status');
+    const posterStatus=element('p','','poster-save-status');
     posterStatus.setAttribute('role','status');posterStatus.setAttribute('aria-live','polite');posterForm.append(posterStatus);
     function posterNote(text,error=false){posterStatus.textContent=text;posterStatus.classList.toggle('error',error);}
     posterSave.disabled=true;posterSave.hidden=true;

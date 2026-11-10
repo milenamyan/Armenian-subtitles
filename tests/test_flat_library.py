@@ -35,7 +35,7 @@ def flat(tmp_path,monkeypatch,isolate_local_library):
 
 
 def movie(root,title='Film'):
-    path=root/'videos'/(title+'.mp4');path.write_bytes(b'video')
+    path=root/'videos'/(title+'.mp4');path.write_bytes(b'other' if title=='Other' else b'video')
     os.utime(path,(time.time()-10,time.time()-10))
     assert worker.run_once()
     return next(item for item in db.all_videos() if item['title']==title)
@@ -82,6 +82,30 @@ def test_import_keeps_one_file_in_place_and_never_registers_it_twice(flat):
     assert worker.run_once() is False
     assert len(db.all_videos())==1
     assert list((flat/'videos').iterdir())==[flat/'videos/Film.mp4']
+
+
+def test_renamed_local_file_does_not_leave_a_second_visible_card(flat,monkeypatch):
+    original=movie(flat,'Film')
+    db.update(original['id'],published=1)
+    monkeypatch.setenv('HAYSUB_CLOUD_VIDEO_IDS','*')
+    (flat/original['object_key']).rename(flat/'videos/Renamed.mp4')
+    os.utime(flat/'videos/Renamed.mp4',(time.time()-10,time.time()-10))
+    with TestClient(main.app) as client:
+        assert client.post('/api/owner/media/scan-local').json()['added']==1
+        assert worker.run_once()
+        assert len(client.get('/api/owner/media').json())==1
+        assert client.get('/api/public/videos').json()==[]
+    assert db.get(original['id']) is not None
+
+
+def test_upload_does_not_reuse_a_missing_local_video(flat):
+    item=movie(flat)
+    (flat/item['object_key']).unlink()
+    with TestClient(main.app) as client:
+        response=client.post('/api/owner/media',json={
+            'title':'Replacement','size':item['size'],'fingerprint':item['fingerprint']})
+        assert response.status_code==200
+        assert response.json()['id']!=item['id']
 
 
 def test_deleting_one_flat_movie_never_deletes_siblings_or_shared_subtitles(flat):

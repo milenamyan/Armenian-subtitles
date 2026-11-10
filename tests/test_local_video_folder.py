@@ -42,6 +42,28 @@ def test_folder_video_appears_and_is_moved_without_an_upload(isolated):
         assert len(client.get('/api/owner/media').json())==1
 
 
+def test_scanning_a_copy_of_an_existing_video_does_not_add_another_card(isolated):
+    dropped(isolated,'Original.mp4')
+    with TestClient(main.app) as client:
+        assert client.post('/api/owner/media/scan-local').json()['added']==1
+        assert worker.run_once()
+        dropped(isolated,'Renamed copy.mp4')
+        result=client.post('/api/owner/media/scan-local').json()
+        assert result['added']==0
+        assert len(client.get('/api/owner/media').json())==1
+
+
+def test_reselecting_the_same_upload_reuses_its_video_record(isolated):
+    payload={'title':'Original','size':1024,'fingerprint':'a'*64}
+    with TestClient(main.app) as client:
+        first=client.post('/api/owner/media',json=payload)
+        assert first.status_code==200
+        again=client.post('/api/owner/media',json={**payload,'title':'Another title'})
+        assert again.status_code==200
+        assert again.json()['id']==first.json()['id']
+        assert len(client.get('/api/owner/media').json())==1
+
+
 def test_worker_auto_discovers_files_without_scan_button(isolated):
     dropped(isolated)
     assert worker.run_once()
