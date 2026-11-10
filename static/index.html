@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="hy"><head><link rel="icon" type="image/png" href="/static/site-planet.png"><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HaySub — Դիտիր հայերեն</title><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/media.css"></head>
+<body><header><a class="brand" href="/">հ<span>HaySub</span></a><span class="local">● ՏԵՂԱԿԱՆ ԱՇԽԱՏԱՆՔԱՅԻՆ ՏԱՐԱԾՔ</span></header>
+<main class="workspace"><section id="file-translator" class="panel file-translator" aria-labelledby="file-translation-title">
+<div class="translation-heading"><h2 id="file-translation-title">Թարգմանիր SRT/VTT ենթագրերը հայերեն</h2></div>
+<p class="hint">Վերբեռնիր անգլերեն կամ ռուսերեն SRT/VTT ֆայլ։ Ստացիր հայերեն SRT՝ նույն ժամանակներով։</p>
+<form id="file-translation-form" class="file-translation-form">
+<label for="translate-file">Ենթագրերի ֆայլ<input id="translate-file" type="file" accept=".srt,.vtt" required></label>
+<button id="translate-file-submit" type="submit" class="primary">Թարգմանել հայերեն <span>→</span></button>
+</form>
+<p id="file-translation-name" class="hint"></p>
+<p id="file-cache-status" class="hint" role="status"></p>
+<progress id="file-translation-progress" value="0" max="1" hidden aria-label="Թարգմանության առաջընթաց"></progress>
+<p id="file-translation-status" class="notice" role="status" aria-live="polite">UTF-8 · մինչև 2 ՄԲ · Ժամանակային նշումները պահպանվում են։</p>
+<div class="file-translation-actions"><button id="file-translation-remove" class="secondary library-delete" type="button" hidden>Կանգնեցնել և հեռացնել գործընթացը</button><button id="file-translation-cancel" class="secondary" type="button" hidden>Չեղարկել թարգմանությունը</button><button id="file-translation-retry" class="secondary" type="button" hidden>Կրկնել թարգմանությունը</button></div>
+<dialog id="file-complete-dialog" class="file-complete-dialog" aria-labelledby="file-complete-title" aria-describedby="file-complete-description">
+<h3 id="file-complete-title">Թարգմանությունն ավարտված է։</h3>
+<p id="file-complete-description">Թարգմանությունը պահված է պատմության մեջ։</p>
+<div class="file-complete-actions">
+<a id="file-download" class="secondary" download hidden>Ներբեռնել հայերեն SRT</a>
+<button id="file-complete-ok" type="button" class="secondary">OK</button>
+</div>
+</dialog>
+<button id="library-open" type="button" class="library-toggle" aria-expanded="false" aria-controls="translation-library"><span class="library-toggle-label"><svg class="library-history-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.6 7.4M3 4v7h7"/><path d="M12 7v5l3 2"/></svg>Թարգմանությունների պատմություն</span><span class="library-arrow" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span></button>
+<dialog id="translation-library" class="panel translation-library" aria-labelledby="library-title">
+<div class="library-heading"><h2 id="library-title">Թարգմանությունների պատմություն</h2></div>
+<label for="library-search">Գտնել թարգմանություն<input id="library-search" type="search" placeholder="Փնտրել ըստ անվան կամ սկզբնական ֆայլի անվան"></label>
+<p id="library-status" class="notice" role="status" aria-live="polite">Բեռնվում են պահված թարգմանությունները…</p><div id="saved-translations"></div>
+</dialog></section><section id="video-library" class="panel video-owner" aria-label="???????????">
+<p id="video-owner-status" class="notice" role="status" aria-live="polite"></p><section id="cloud-url-player" class="video-watch inline-url-player" aria-labelledby="watch-title"><h3 id="watch-title">Cloud video</h3><form id="watch-url-form" class="watch-url-form">
+<label for="watch-video-url">Video URL<input id="watch-video-url" type="url" placeholder="https://?/video.mp4" required></label>
+<label for="watch-subtitle-url">Subtitle URL (optional, SRT or VTT)<input id="watch-subtitle-url" type="url" placeholder="https://?/subtitles.vtt"></label>
+<button id="watch-url-load" type="submit" class="secondary">Load &amp; Play</button>
+</form><p id="watch-status" class="notice" role="status" aria-live="polite"></p><form id="watch-save-form" class="watch-save-form" hidden>
+<label for="watch-save-title">Video name<input id="watch-save-title" maxlength="200" required></label>
+<button id="watch-save-submit" type="submit" class="secondary">Add to page</button>
+</form>
+<div id="watch-player-stage" class="video-watch inline-playback-stage" hidden><div class="inline-playback-toolbar"><button id="watch-close" type="button" class="secondary">Փակել</button></div><video id="hosted-player" data-url-player="true" controls playsinline preload="metadata" crossorigin="anonymous" hidden>
+<source id="hosted-source" type="video/mp4">
+<track id="armenian-track" kind="subtitles" srclang="hy" label="Հայերեն" default>
+</video><div class="subtitle-position" role="group" aria-labelledby="subtitle-position-label"><span id="subtitle-position-label">Ենթագրերի բարձրություն</span><button id="watch-subtitle-up" class="secondary" type="button">↑ Վերև</button><button id="watch-subtitle-down" class="secondary" type="button">↓ Ներքև</button></div><div id="watch-controls" class="file-translation-actions" hidden><label for="watch-speed">Արագություն<select id="watch-speed"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><label for="watch-subtitles">Ենթագրեր<select id="watch-subtitles"><option value="hy">Հայերեն</option><option value="off">Անջատված</option></select></label><button id="watch-fullscreen" class="secondary" type="button">Լիաէկրան</button><button id="watch-retry" class="secondary" type="button">Կրկին միացնել</button></div></div><p id="watch-visibility" hidden></p></section><p id="hosted-empty" class="hint">Դեռ վերբեռնված տեսանյութեր չկան։</p><div id="hosted-videos"></div><h3>Քո պատրաստ տեսանյութերը</h3><div id="hosted-completed-videos"></div>
+</section></main><script src="/static/file-translator.js"></script><script src="/static/translation-library.js"></script><script src="/static/media-upload.js"></script><script src="/static/poster-editor.js?v=full-image"></script><script src="/static/media-owner.js"></script><script src="/static/media-sources.js"></script><script src="/static/watch.js"></script></body></html>

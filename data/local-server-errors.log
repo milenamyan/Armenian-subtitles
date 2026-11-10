@@ -1,0 +1,6 @@
+INFO:     Started server process [28504]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+C:\Users\Milena Mehrabyan\Desktop\Armenian-subtitles\.venv\Lib\site-packages\fastapi\openapi\utils.py:295: UserWarning: Duplicate Operation ID dev_media_dev_media_put for function dev_media at C:\Users\Milena Mehrabyan\Desktop\Armenian-subtitles\app\media_api.py
+  warnings.warn(message, stacklevel=1)

@@ -1,0 +1,11 @@
+1
+00:00:01,000 --> 00:00:04,000
+Hello, welcome to HaySub.
+
+2
+00:00:04,000 --> 00:00:07,000
+This is a subtitle synchronization sample.
+
+3
+00:00:09,000 --> 00:00:12,000
+Seek back to see the previous line again.

@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: haysub
+    runtime: docker
+    plan: starter
+    healthCheckPath: /healthz
+    disk:
+      name: haysub-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: HAYSUB_PUBLIC
+        value: "1"
+      - key: HAYSUB_DB
+        value: /var/data/haysub.sqlite3
+      - key: HAYSUB_ADMIN_TOKEN
+        generateValue: true
+      - key: HAYSUB_PUBLIC_URL
+        sync: false
+      - key: HAYSUB_CONTACT_EMAIL
+        sync: false
+      # Uploads remain disabled until private S3 configuration is added.
+      - key: HAYSUB_MEDIA_WORKER_ENABLED
+        value: "1"
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        sync: false

@@ -1,0 +1,23 @@
+[
+  {"text":"[Music]","silent":true},
+  {"text":">> [music]","silent":true},
+  {"text":"[soft music]","silent":true},
+  {"text":"(музыка)","silent":true},
+  {"text":"[звучит музыка]","silent":true},
+  {"text":"[երաժշտություն]","silent":true},
+  {"text":"երաժշտությւոն","silent":true},
+  {"text":"♪ ♫","silent":true},
+  {"text":"[music]\n♪","silent":true},
+  {"text":"&gt;&gt; [music]","silent":true},
+  {"text":"Hello","silent":false},
+  {"text":"The music is loud.","silent":false},
+  {"text":"Музыка помогает мне.","silent":false},
+  {"text":"Ես սիրում եմ երաժշտություն։","silent":false},
+  {"text":"♪ Sing with me ♪","silent":false},
+  {"text":"[music]\nHello","silent":false},
+  {"text":"[singing]","silent":false},
+  {"text":"[screaming]","silent":false},
+  {"text":"123","silent":false},
+  {"text":"...","silent":false},
+  {"text":"","silent":false}
+]

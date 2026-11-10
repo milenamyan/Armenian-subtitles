@@ -1,0 +1,263 @@
+INFO:     127.0.0.1:59812 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51088 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51088 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60304 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60304 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60304 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58258 - "GET /static/media.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:60304 - "GET /static/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:52395 - "GET /static/file-translator.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64813 - "GET /static/translation-library.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:54914 - "GET /static/media-upload.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:49955 - "GET /static/media-owner.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:64813 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49955 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64813 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49955 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:64813 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54914 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51443 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /static/style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49672 - "GET /static/media.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53738 - "GET /static/file-translator.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "GET /static/translation-library.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61679 - "GET /static/library-import.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /static/media-upload.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /static/media-owner.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57228 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57228 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56033 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:57228 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57228 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56033 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:65027 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58038 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63343 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63343 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63343 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63343 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:63343 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63343 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51480 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63343 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58038 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58038 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63343 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51480 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58711 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58963 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61270 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58711 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:58963 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58963 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58711 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61270 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:56177 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56177 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56177 - "GET /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62586 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54921 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "DELETE /api/subtitle-files/b0cf7fe3132f4d9ea7882a8fc80ee7ba HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61271 - "GET /static/media-owner.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:50218 - "GET /static/file-translator.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61271 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50218 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /static/translation-library.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:61271 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50218 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61271 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50218 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61271 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50218 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:60134 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /static/style.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:61045 - "GET /static/file-translator.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:62922 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61045 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62922 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61045 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:61045 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61045 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62922 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:59473 - "GET /openapi.json HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /static/style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53147 - "GET /static/media.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53570 - "GET /static/file-translator.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54074 - "GET /static/translation-library.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "GET /static/library-import.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /static/media-upload.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /static/media-owner.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62901 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:62901 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /static/style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53570 - "GET /static/library-import.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54074 - "GET /static/translation-library.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53147 - "GET /static/media-upload.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60261 - "GET /static/media.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "GET /static/file-translator.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /static/media-owner.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50226 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62901 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50226 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54321 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54321 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54321 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54321 - "GET /static/style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63681 - "GET /static/media.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52395 - "GET /static/translation-library.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53336 - "GET /static/file-translator.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49734 - "GET /static/library-import.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60436 - "GET /static/media-upload.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54321 - "GET /static/media-owner.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54321 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:49734 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54321 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49734 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49734 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49734 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54636 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54636 - "GET /admin HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54636 - "GET /static/style.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63589 - "GET /static/media.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64171 - "GET /static/file-translator.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55555 - "GET /static/translation-library.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53088 - "GET /static/library-import.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57227 - "GET /static/media-upload.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54636 - "GET /static/media-owner.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54636 - "GET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:54636 - "GET /api/owner/media/config HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54636 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53088 - "GET /api/library HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53088 - "GET /api/owner/media HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53088 - "GET /favicon.ico HTTP/1.1" 404 Not Found

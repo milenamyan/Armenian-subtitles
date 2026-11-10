@@ -1,0 +1,17 @@
+{
+  "kept": [
+    "videos\\Երկնային արքայություն.mp4",
+    "subtitles\\Երկնային արքայություն\\armenian.srt",
+    "subtitles\\Երկնային արքայություն\\original.vtt",
+    "videos\\22 Փամփուշտ.mp4",
+    "subtitles\\22 Փամփուշտ\\armenian.srt",
+    "subtitles\\22 Փամփուշտ\\original.srt"
+  ],
+  "removed_redundant_files": [
+    "data\\normalized_hy.srt",
+    "data\\translated-subtitles\\9ceada382d1d4cccb655e099e62bc793\\22 Փամփուշտ_hy.srt",
+    "data\\local-media\\haysub-media\\22 Փամփուշտ\\subtitles\\427c731186a44dff97966751be5ee5a4.vtt",
+    "data\\local-media\\haysub-media\\22 Փամփուշտ\\subtitles\\e62046cae50748a68095006160906041.vtt",
+    "data\\local-media\\haysub-media\\Երկնային արքայություն\\Երկնային արքայություն.mp4"
+  ]
+}

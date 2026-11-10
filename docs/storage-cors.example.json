@@ -1,0 +1,9 @@
+[
+  {
+    "AllowedOrigins": ["https://YOUR-HAYSUB-SERVICE.onrender.com"],
+    "AllowedMethods": ["GET", "HEAD", "PUT"],
+    "AllowedHeaders": ["Content-Type", "Range", "If-Range", "x-amz-*"],
+    "ExposeHeaders": ["ETag", "Accept-Ranges", "Content-Range", "Content-Length", "Last-Modified"],
+    "MaxAgeSeconds": 3600
+  }
+]

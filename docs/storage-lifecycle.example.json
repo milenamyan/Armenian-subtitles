@@ -1,0 +1,10 @@
+{
+  "Rules": [
+    {
+      "ID": "haysub-abort-abandoned-multipart",
+      "Status": "Enabled",
+      "Filter": {"Prefix": "haysub-media/"},
+      "AbortIncompleteMultipartUpload": {"DaysAfterInitiation": 7}
+    }
+  ]
+}

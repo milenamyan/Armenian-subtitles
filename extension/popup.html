@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="hy"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HaySub ենթագրեր</title><link rel="stylesheet" href="popup.css"></head>
+<body><header><strong>HaySub <span>ԵՆԹԱԳՐԵՐ</span></strong><small>Ենթագրեր՝ հենց YouTube-ի վրա</small></header>
+<main><p id="video-label">Ստուգվում է տեսանյութի էջը…</p>
+<section id="shared-library" aria-label="Հայերեն ենթագրերի գրադարան">
+<button id="library-open" type="button">Ընտրել հայերեն ենթագրերը գրադարանից</button>
+<div id="library-panel" hidden><form id="extension-library-search"><label for="extension-library-query">Ֆիլմի կամ սերիայի անունը<input id="extension-library-query" type="search" maxlength="200"></label><button type="submit">Փնտրել</button></form><p id="extension-library-status" class="hint" role="status"></p><div id="extension-library-results"></div><button id="extension-library-more" hidden>Ավելին</button></div>
+</section>
+<section id="site-controls" hidden aria-label="Այլ կայքի նվագարկիչ">
+<p class="hint">HaySub-ը ակտիվացված է այս էջում։ Ընտրիր ենթագրերի ֆայլը։ Եթե նվագարկիչը առանձին iframe-ի մեջ է, միացրու դրա հասանելիությունը։</p>
+<label id="site-video-label" hidden>Նվագարկիչ<select id="site-video"></select></label>
+<button id="site-embedded" type="button">Գտնել ներկառուցված նվագարկիչները</button>
+<div id="site-frame-controls" hidden><label>Նվագարկիչի էջը<select id="site-frame"></select></label><button id="site-frame-allow" type="button">Թույլատրել այս նվագարկիչը</button></div>
+<p id="site-status" class="hint" role="status"></p>
+</section>
+<label class="upload" for="file">＋ Ընտրել SRT / VTT ֆայլ<input id="file" type="file" accept=".srt,.vtt" disabled></label>
+<p class="hint">UTF-8 · մինչև 2 ՄԲ։ Վերբեռնված ֆայլը միշտ առաջնահերթ է։ Միայն YouTube-ում կարելի է ավտոմատ ստանալ ենթագրերը՝ առանց ֆայլի։</p>
+<p id="file-label">Ֆայլ ընտրված չէ։</p><p id="status" role="status" aria-live="polite"></p>
+<section id="translation-controls" aria-label="Հայերեն թարգմանություն">
+<label class="row">Թարգմանել հայերեն <input id="translate-enabled" type="checkbox" checked></label>
+<p class="hint">Թարգմանության համար գործարկիր HaySub Python սերվերը՝ <b>http://127.0.0.1:8000</b>։ Gemini բանալին պահվում է միայն սերվերում։ Անջատելու դեպքում ընտրված ֆայլը կցուցադրվի իր լեզվով։</p>
+<progress id="translation-progress" value="0" max="1" hidden aria-label="Հայերեն թարգմանության առաջընթաց"></progress>
+<div class="buttons"><button id="translate-youtube" disabled>YouTube ենթագրերը → հայերեն</button><button id="translation-retry" hidden>Կրկնել</button><button id="translation-stop" hidden>Դադարեցնել</button></div>
+</section>
+<section aria-label="Ենթագրերի կարգավորումներ">
+<label class="row">Ցուցադրել ենթագրերը <input id="enabled" type="checkbox" checked></label>
+<label class="row" for="fontSize">Տառաչափ <output id="fontSize-value">28 px</output></label><input id="fontSize" type="range" min="14" max="64" value="28">
+<label class="row">Տեքստի գույնը <input id="textColor" type="color" value="#ffffff"></label>
+<label class="row" for="backgroundOpacity">Ֆոնի անթափանցություն <output id="backgroundOpacity-value">65%</output></label><input id="backgroundOpacity" type="range" min="0" max="1" step="0.05" value="0.65">
+<label class="row" for="verticalPosition">Բարձրությունը ներքևից <output id="verticalPosition-value">12%</output></label><input id="verticalPosition" type="range" min="0" max="80" value="12">
+<p class="hint">Ներքևում միշտ տեղ է թողնվում YouTube-ի կոճակների համար։</p>
+<label class="row">Ժամանակի շեղում (վրկ) <input id="offset" type="number" min="-120" max="120" step="0.1" value="0" disabled></label>
+<p class="hint"><b>+2</b>՝ ենթագրերը 2 վրկ ավելի ուշ։ <b>−2</b>՝ 2 վրկ ավելի շուտ։ Շեղումը պահվում է առանձին՝ յուրաքանչյուր տեսանյութի համար։</p>
+</section>
+<div class="buttons"><button id="clear-current" disabled>Մաքրել այս ֆայլը</button><button id="clear-all">Մաքրել բոլոր ֆայլերը</button></div>
+<p id="storage" class="hint"></p>
+<details><summary>Ինչպես օգտագործել</summary><p class="hint">Միացված թարգմանությամբ ֆայլը ուղարկվում է տեղային Python սերվերին, իսկ այնտեղից՝ Gemini-ին։ Առանց ֆայլի օգտագործվում են հասանելի YouTube ենթագրերը։ Թարգմանությունը ցուցադրվում է հատվածներով։ Միայն տեղային դիտման համար անջատիր թարգմանությունը։ Լիաէկրանի համար օգտագործիր YouTube-ի կոճակը։</p></details>
+</main><script src="core.js"></script><script src="config.js"></script><script src="page-access.js"></script><script src="popup.js"></script></body></html>
