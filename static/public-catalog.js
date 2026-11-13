@@ -25,6 +25,7 @@
     })();
     thumbnail.append(badge);
     if(saved){const bar=element('span',undefined,'movie-progress'),fill=element('span');fill.style.width=(saved.position/saved.duration*100)+'%';bar.setAttribute('aria-hidden','true');bar.append(fill);thumbnail.append(bar);}
+    if(item.is_new===true)thumbnail.append(element('span','ՆՈՐ','movie-new-badge'));
     link.append(thumbnail,element('h3',item.title));return link;
   }
   function render(){
@@ -35,14 +36,16 @@
     $('public-video-status').hidden=!!items.length;
   }
   window.addEventListener('pagehide',remember);
-  window.addEventListener('pageshow',render);
+  window.addEventListener('pageshow',event=>{render();if(event?.persisted)void load();});
+  window.addEventListener('focus',()=>{if(loaded)void load();});
   window.addEventListener('storage',render);
   async function load(){
     try{
+      const restoreScroll=!loaded;
       const response=await fetch('/api/public/videos',{cache:'no-store'});
       if(!response.ok)throw Error('Չհաջողվեց բեռնել ֆիլմերը։ Փորձիր կրկին։');
       items=(await response.json()).sort((a,b)=>(b.published_at||0)-(a.published_at||0));loaded=true;render();
-      requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,state.scroll)));
+      if(restoreScroll)requestAnimationFrame(()=>window.scrollTo(0,Math.max(0,state.scroll)));
     }catch(error){$('public-video-status').hidden=false;$('public-video-status').textContent=error.message;}
   }
   void load();

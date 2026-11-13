@@ -52,6 +52,9 @@ update `catalog-site/catalog.json` and its public cover images:
   boolean acts as the on/off switch. Never-published private films are excluded.
 - Renaming changes its title; saving a cover copies the new image into
   `catalog-site/assets/posters/` with a versioned filename.
+- The **ՆՈՐ պիտակ** checkbox immediately saves each film's `is_new` flag.
+  Checked films display a purple **ՆՈՐ** badge on their poster; unchecking removes
+  it. The live static website receives the change with the next catalog deploy.
 - Each film's owner-only **Ենթագրերի բարձրություն** controls move the captions
   up/down in its open owner preview. Click **Պահել դիրքը** to save that film's
   height. New videos default to 10%; existing saved positions are preserved.

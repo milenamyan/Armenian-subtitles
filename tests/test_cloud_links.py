@@ -31,7 +31,7 @@ def test_links_persist_and_public_title_opens_the_saved_video_without_copying_fi
         assert item['source_type']=='cloud' and item['published'] and item['has_subtitles']
         assert item['state']=='ready'
         listed=client.get('/api/public/videos').json()
-        assert listed==[{'id':item['id'],'title':'My film','watch_url':'/watch/'+item['id'],'has_subtitles':True,'duration':None,'poster_url':None,'published_at':listed[0]['published_at']}]
+        assert listed==[{'id':item['id'],'title':'My film','watch_url':'/watch/'+item['id'],'has_subtitles':True,'duration':None,'is_new':False,'poster_url':None,'published_at':listed[0]['published_at']}]
         access=client.get('/api/public/hosted/'+item['id']+'/playback').json()
         assert access['video_url']==VIDEO and access['subtitle_url']==SUBTITLES
         assert access['source_type']=='cloud'

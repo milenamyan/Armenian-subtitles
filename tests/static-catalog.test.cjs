@@ -71,16 +71,17 @@ test('native subtitle cues use the saved film height without viewer controls',as
 });
 
 test('catalog renders searchable film links and literal titles without backend requests',async()=>{
-  const nodes=new Map(),requests=[],probes=[];
+  const nodes=new Map(),requests=[],probes=[],entry={...film,is_new:true};
   function element(tag){return {tag,children:[],listeners:{},style:{},value:'',hidden:true,textContent:'',append(...items){this.children.push(...items);},replaceChildren(...items){this.children=items;},setAttribute(){},addEventListener(name,fn){this.listeners[name]=fn;}};}
   const node=id=>{if(!nodes.has(id))nodes.set(id,element('div'));return nodes.get(id);};
   vm.runInNewContext(fs.readFileSync('catalog-site/catalog.js','utf8'),{
     document:{getElementById:node,createElement:element},window:{addEventListener(){},scrollTo(){}},sessionStorage:{getItem:()=>null},requestAnimationFrame:fn=>fn(),
-    HaySubCatalog:model,HaySubProgress:{read:()=>null,duration:()=>null,loadDuration:async(id,url)=>{probes.push([id,url]);return 6278;}},fetch:async url=>{requests.push(url);return {ok:true,json:async()=>({version:1,films:[film]})};}});
+    HaySubCatalog:model,HaySubProgress:{read:()=>null,duration:()=>null,loadDuration:async(id,url)=>{probes.push([id,url]);return 6278;}},fetch:async url=>{requests.push(url);return {ok:true,json:async()=>({version:1,films:[entry]})};}});
   await flush();
   assert.deepEqual(requests,['catalog.json']);assert.equal(node('public-videos').children.length,1);
   const link=node('public-videos').children[0];assert.equal(link.href,'watch.html?id=film-1');assert.equal(link.children[1].textContent,film.title);
   assert.deepEqual(probes,[[film.id,film.video_url]]);assert.equal(link.children[0].children[1].textContent,'1:44:38');
+  assert.equal(link.children[0].children.at(-1).className,'movie-new-badge');
   node('search').value='missing film';node('search').listeners.input();assert.equal(node('public-videos').children.length,0);assert.equal(node('catalog-status').hidden,false);
   node('search').value='ՀԱՅԵՐԵՆ';node('search').listeners.input();assert.equal(node('public-videos').children.length,1);
 });

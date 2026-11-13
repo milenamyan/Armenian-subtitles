@@ -39,6 +39,8 @@ def validate(data):
             raise ValueError('subtitle_height must be an integer between 0 and 40.')
         if 'published' in item and not isinstance(item['published'], bool):
             raise ValueError('published must be true or false.')
+        if 'is_new' in item and not isinstance(item['is_new'], bool):
+            raise ValueError('is_new must be true or false.')
         if not isinstance(item.get('title'), str) or not item['title'].strip():
             raise ValueError('Each film needs a title.')
         public_url(item.get('video_url'))
@@ -97,7 +99,7 @@ def export_library(database, config, destination, *, strict=True):
                         'video_url': external or cloud(row['object_key']),
                         'subtitle_url': row.get('external_subtitle_url') or cloud(row.get('subtitle_key')),
                         'subtitle_offset': row.get('subtitle_offset') or 0,
-                        'subtitle_height': row.get('subtitle_height', 10)}
+                        'subtitle_height': row.get('subtitle_height', 10), 'is_new': bool(row.get('is_new', False))}
                 validate({'version': 1, 'films': [film]})
             except ValueError:
                 if strict:

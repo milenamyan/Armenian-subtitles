@@ -157,3 +157,22 @@ def test_saved_height_is_per_film_persistent_and_exported_to_public_playback(syn
     assert media_db.get(first)['subtitle_height'] == 18
     with TestClient(main.app) as reopened:
         assert reopened.get(path).json()['subtitle_height'] == 18
+
+
+def test_new_badge_toggle_persists_and_exports_without_affecting_other_films(synced):
+    client, site = synced
+    first = add(client).json()['id']
+    second = add(client, 'https://media.example.org/second.mp4').json()['id']
+    path = '/api/owner/media/' + first
+    assert client.get(path).json()['is_new'] is False
+    for enabled in (True, False):
+        response = client.patch(path, json={'is_new': enabled})
+        assert response.status_code == 200
+        assert response.json()['is_new'] is enabled
+        exported = {item['id']: item for item in films(site)}
+        listed = {item['id']: item for item in client.get('/api/public/videos').json()}
+        assert exported[first]['is_new'] is enabled
+        assert listed[first]['is_new'] is enabled
+        assert exported[second]['is_new'] is False
+        assert bool(media_db.get(first)['is_new']) is enabled
+    assert client.patch(path, json={'is_new': 'true'}).status_code == 422

@@ -78,3 +78,20 @@ test('fresh catalog restores scroll and shows all movies despite a previously st
   await new Promise(resolve=>setImmediate(resolve));
   assert.equal(nodes.has('public-query'),false);assert.equal($('public-videos').children.length,2);assert.equal(restoredScroll,410);
 });
+
+test('returning to the catalog reloads the owner New flag and removes its badge when unchecked',async()=>{
+  const {progress}=progressHarness(),nodes=new Map(),events=new Map();let isNew=false,scrolls=0;
+  const element=()=>({children:[],style:{},append(...items){this.children.push(...items);},replaceChildren(...items){this.children=items;},addEventListener(){},setAttribute(){}});
+  const $=id=>{if(!nodes.has(id))nodes.set(id,element());return nodes.get(id);};
+  vm.runInNewContext(fs.readFileSync('static/public-catalog.js','utf8'),{
+    HaySubProgress:progress,document:{getElementById:$,createElement:element},sessionStorage:{getItem:()=>null},
+    window:{addEventListener:(name,fn)=>events.set(name,fn),scrollTo:()=>scrolls++},requestAnimationFrame:fn=>fn(),
+    fetch:async()=>({ok:true,json:async()=>[{id:'a',title:'Film',duration:900,is_new:isNew}]})
+  });
+  const flush=()=>new Promise(resolve=>setImmediate(resolve));await flush();
+  const badges=()=>$('public-videos').children[0].children[0].children.filter(item=>item.className==='movie-new-badge');
+  assert.equal(badges().length,0);
+  isNew=true;events.get('focus')();await flush();assert.equal(badges().length,1);assert.equal(badges()[0].textContent,'ՆՈՐ');
+  isNew=false;events.get('pageshow')({persisted:true});await flush();assert.equal(badges().length,0);
+  assert.equal(scrolls,1);
+});

@@ -32,3 +32,5 @@
 @media(min-width:600px){.movie-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
 @media(min-width:1100px){.movie-grid{grid-template-columns:repeat(auto-fill,minmax(160px,190px))}}
 @media(prefers-reduced-motion:reduce){.movie-card h3{transition:none}}
+
+.movie-new-badge{position:absolute;top:10px;left:10px;display:inline-flex;align-items:center;padding:5px 10px;border:1px solid #ffffff45;border-radius:7px;background:linear-gradient(135deg,#dcc6ff,#ab83ed);box-shadow:0 3px 12px #130b2b66;color:#241432;font-size:11px;font-weight:800;letter-spacing:1px;line-height:1.4;pointer-events:none}

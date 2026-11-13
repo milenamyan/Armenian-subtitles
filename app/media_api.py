@@ -74,6 +74,7 @@ def summary(item):
     manifest=db.parts(item['id']);expected=expected_parts(item)
     return {key:item[key] for key in ('id','title','size','state','published','subtitle_offset','duration','error','created','updated','subtitle_height')}|{
         'part_size':item['part_size'],'part_count':len(expected),'fingerprint':item['fingerprint'],
+        'is_new':bool(item['is_new']),
         'uploaded_bytes':sum(expected.get(p['number'],0) for p in manifest),
         'parts':manifest,'has_subtitles':bool(item['subtitle_key'] or item['external_subtitle_url']),
         'source_type':'cloud' if item['external_video_url'] or media_sources.cloud_selected(item['id']) else 'local',
@@ -176,7 +177,7 @@ def public_videos():
     items=[item for item in listed_videos() if item['published'] and item['state']=='ready']
     items.sort(key=lambda item:item['published_at'] or item['created'],reverse=True)
     return [dict(id=item['id'],title=item['title'],watch_url='/watch/'+item['id'],
-                 has_subtitles=bool(item['external_subtitle_url'] or item['subtitle_key']),duration=item['duration'],
+                 has_subtitles=bool(item['external_subtitle_url'] or item['subtitle_key']),duration=item['duration'],is_new=bool(item['is_new']),
                  published_at=item['published_at'],poster_url='/api/public/hosted/'+item['id']+'/poster' if item['poster'] else None)
             for item in items]
 
@@ -315,6 +316,7 @@ def complete(identity:str):
 class Changes(BaseModel):
     title:str|None=Field(None,min_length=1,max_length=200)
     published:bool|None=None
+    is_new:bool|None=Field(None,strict=True)
     subtitle_height:int|None=Field(None,ge=0,le=40,strict=True)
 
 
@@ -323,6 +325,7 @@ def change(identity:str,body:Changes):
     item=item_or_404(identity);values={}
     if body.title is not None:values['title']=clean_title(body.title)
     if body.subtitle_height is not None:values['subtitle_height']=body.subtitle_height
+    if body.is_new is not None:values['is_new']=int(body.is_new)
     if body.published is not None:
         if body.published and (item['state']!='ready' or (not item['subtitle_key'] and not item['external_subtitle_url'] and not item['external_video_url'])):raise HTTPException(409,'Wait for successful media inspection and attach Armenian subtitles before publishing.')
         values['published']=int(body.published)

@@ -15,6 +15,7 @@
       ids.add(item.id);
       if(item.subtitle_height!==undefined&&(!Number.isInteger(item.subtitle_height)||item.subtitle_height<0||item.subtitle_height>40))throw Error('Invalid subtitle height.');
       if(item.published!==undefined&&typeof item.published!=='boolean')throw Error('published must be true or false.');
+      if(item.is_new!==undefined&&typeof item.is_new!=='boolean')throw Error('is_new must be true or false.');
       if(typeof item.title!=='string'||!item.title.trim())throw Error('Each film needs a title.');
       const poster=item.poster_url||'';
       if(poster&&!/^assets\/posters\/[a-zA-Z0-9_-]+\.(png|jpg|webp)$/.test(poster))publicUrl(poster);
