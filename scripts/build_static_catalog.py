@@ -8,6 +8,7 @@ import argparse
 import json
 import shutil
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile
 
@@ -40,6 +41,7 @@ def main():
         visible = sum(item.get('published', True) for item in data['films'])
         print(f'Exported {visible} visible and {len(data["films"]) - visible} hidden films; skipped {skipped}. Database unchanged.')
     data = validate(json.loads(manifest.read_text(encoding='utf-8')))
+    (SITE / 'deployment.json').write_text(json.dumps({'updated_at': datetime.now(timezone.utc).isoformat()}) + '\n', encoding='utf-8')
     assets = SITE / 'assets'
     assets.mkdir(exist_ok=True)
     for name in ASSETS:
@@ -52,7 +54,7 @@ def main():
     output.parent.mkdir(exist_ok=True)
     # Explicit allowlist: do not accidentally package a local secret or database.
     files = [SITE / name for name in ('index.html', 'watch.html', 'catalog.css', 'catalog-model.js',
-             'catalog.js', 'player.js', 'catalog.json')]
+             'catalog.js', 'player.js', 'catalog.json', 'build.cjs', 'deployment-date.js', 'deployment.json')]
     files += [assets / name for name in ASSETS]
     files += [SITE / film['poster_url'] for film in data['films'] if film.get('poster_url', '').startswith('assets/')]
     with ZipFile(output, 'w', ZIP_DEFLATED) as archive:

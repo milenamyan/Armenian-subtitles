@@ -12,9 +12,12 @@ hosting limits still depend on your accounts.
    `catalog-site` folder to your GitHub repository, preserving its contents.
    You can also commit the `catalog-site` directory directly from this project.
 2. In Render select **New > Static Site**, connect the repository and branch.
-3. Leave **Root Directory** empty, leave **Build Command** empty, and set
+3. Leave **Root Directory** empty, set **Build Command** to `node catalog-site/build.cjs`, and set
    **Publish Directory** to `catalog-site`. No environment variables are needed.
-   If the form requires a build command, use `echo Static catalog ready`.
+   The build writes the deployment timestamp displayed at the top of both pages
+   in Yerevan time. For an existing Render site, update this Build Command once;
+   every subsequent deployment refreshes the timestamp automatically. If the
+   repository contains the catalog files at its root, use `node build.cjs`.
 4. Deploy and copy the new HTTPS address. A new service will normally receive a
    different address from the old web service.
 5. In Cloudflare R2 > your bucket > Settings > CORS Policy, add the new website
