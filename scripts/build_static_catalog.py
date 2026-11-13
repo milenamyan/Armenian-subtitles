@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 SITE = ROOT / 'catalog-site'
 ASSETS = ('style.css', 'viewer.css', 'site-planet.png', 'poster-fallback.svg',
-          'playback-progress.js', 'media-sources.js', 'fullscreen.js', 'fullscreen.css')
+          'playback-progress.js', 'media-sources.js')
 
 
 from app.catalog_export import public_url, validate, export_library, save_manifest

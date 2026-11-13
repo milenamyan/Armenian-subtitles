@@ -182,7 +182,26 @@
     const headerBody=element('div',undefined,'hosted-video-header-body');
     headerBody.append(heading,state,actions);
     header.append(headerBody,posterForm);
-    root.append(header,error,form,share,subtitleForm);$('hosted-videos').append(root);
+    const heightEditor=element('div',undefined,'owner-subtitle-height'),heightLabel=element('span','Ենթագրերի բարձրություն'),heightValue=element('output',String(item.subtitle_height||0)+'%');
+    let draftHeight=item.subtitle_height||0,heightSaving=false;
+    const heightSave=element('button','Պահել դիրքը','secondary');heightSave.type='button';
+    heightSave.addEventListener('click',async()=>{
+      if(heightSaving)return;heightSaving=true;heightSave.disabled=true;
+      try{
+        const saved=await api('/api/owner/media/'+item.id,{method:'PATCH',body:{subtitle_height:draftHeight}});
+        apply(rows.get(item.id),saved);heightSave.disabled=true;note('Ենթագրերի դիրքը պահպանված է այս ֆիլմի համար։');
+      }catch(error){note(error.message);}finally{heightSaving=false;heightSave.disabled=draftHeight===(rows.get(item.id)?.item.subtitle_height||0);}
+    });
+    function moveHeight(amount){
+      if(heightSaving)return;
+      draftHeight=Math.max(0,Math.min(40,draftHeight+amount));heightValue.textContent=draftHeight+'%';
+      heightSave.disabled=draftHeight===(rows.get(item.id)?.item.subtitle_height||0);
+      window.dispatchEvent(new CustomEvent('haysub-subtitle-height',{detail:{id:item.id,height:draftHeight}}));
+    }
+    const heightUp=button('↑ Վերև',()=>moveHeight(2)),heightDown=button('↓ Ներքև',()=>moveHeight(-2));
+    heightSave.disabled=true;heightValue.setAttribute('aria-live','polite');
+    heightEditor.append(heightLabel,heightUp,heightDown,heightValue,heightSave);
+    root.append(header,error,form,share,subtitleForm,heightEditor);$('hosted-videos').append(root);
     const row={root,title,state,error,preview,publish,share,resume,retry,remove,form,rename,subtitleForm,subtitleSelect,attach,attaching:false,posterPreview,posterSave,posterStatus,posterDirty:false,item};rows.set(item.id,row);subtitleChoices(row);apply(row,item);
   }
   async function refresh(){

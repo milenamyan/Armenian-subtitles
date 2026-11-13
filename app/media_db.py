@@ -21,6 +21,7 @@ def connect():
     for name,kind in (('binned_at','REAL'),('purge_after','REAL'),('bin_previous_state','TEXT'),('bin_object_key','TEXT'),('inbox_path','TEXT'),('external_video_url','TEXT'),('external_subtitle_url','TEXT'),('published_at','REAL'),('poster','BLOB'),('poster_type','TEXT')):
         if name not in columns:db.execute('ALTER TABLE hosted_videos ADD COLUMN '+name+' '+kind)
     if 'list_restored' not in columns:db.execute('ALTER TABLE hosted_videos ADD COLUMN list_restored INTEGER NOT NULL DEFAULT 0')
+    if 'subtitle_height' not in columns:db.execute('ALTER TABLE hosted_videos ADD COLUMN subtitle_height INTEGER NOT NULL DEFAULT 0')
     db.execute('UPDATE hosted_videos SET published_at=created WHERE published=1 AND published_at IS NULL')
     db.execute('CREATE UNIQUE INDEX IF NOT EXISTS hosted_inbox_path ON hosted_videos(inbox_path) WHERE inbox_path IS NOT NULL')
     db.execute("CREATE UNIQUE INDEX IF NOT EXISTS hosted_external_url ON hosted_videos(external_video_url) WHERE external_video_url IS NOT NULL AND state='ready'")
@@ -113,7 +114,7 @@ def create(item):
 
 
 def update(identity, *, states=None, token=None, **values):
-    allowed={'list_restored','published_at','poster','poster_type','external_subtitle_url','object_key','title','upload_id','state','published','subtitle_key','subtitle_cues','subtitle_offset','duration','media_info','error','lease_until','worker_token','failures','inbox_path','size'}
+    allowed={'subtitle_height','list_restored','published_at','poster','poster_type','external_subtitle_url','object_key','title','upload_id','state','published','subtitle_key','subtitle_cues','subtitle_offset','duration','media_info','error','lease_until','worker_token','failures','inbox_path','size'}
     if not set(values)<=allowed:
         raise ValueError('Invalid media metadata update')
     if values.get('published'):

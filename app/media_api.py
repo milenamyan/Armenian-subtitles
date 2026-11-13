@@ -72,7 +72,7 @@ def backend_for(item=None):
 
 def summary(item):
     manifest=db.parts(item['id']);expected=expected_parts(item)
-    return {key:item[key] for key in ('id','title','size','state','published','subtitle_offset','duration','error','created','updated')}|{
+    return {key:item[key] for key in ('id','title','size','state','published','subtitle_offset','duration','error','created','updated','subtitle_height')}|{
         'part_size':item['part_size'],'part_count':len(expected),'fingerprint':item['fingerprint'],
         'uploaded_bytes':sum(expected.get(p['number'],0) for p in manifest),
         'parts':manifest,'has_subtitles':bool(item['subtitle_key'] or item['external_subtitle_url']),
@@ -312,12 +312,14 @@ def complete(identity:str):
 class Changes(BaseModel):
     title:str|None=Field(None,min_length=1,max_length=200)
     published:bool|None=None
+    subtitle_height:int|None=Field(None,ge=0,le=40,strict=True)
 
 
 @router.patch('/api/owner/media/{identity}')
 def change(identity:str,body:Changes):
     item=item_or_404(identity);values={}
     if body.title is not None:values['title']=clean_title(body.title)
+    if body.subtitle_height is not None:values['subtitle_height']=body.subtitle_height
     if body.published is not None:
         if body.published and (item['state']!='ready' or (not item['subtitle_key'] and not item['external_subtitle_url'] and not item['external_video_url'])):raise HTTPException(409,'Wait for successful media inspection and attach Armenian subtitles before publishing.')
         values['published']=int(body.published)
@@ -437,7 +439,7 @@ def playback(item,owner=False):
         if not subtitles and item['subtitle_key']:
             subtitles=('/api/owner/media/' if owner else '/api/public/hosted/')+item['id']+'/subtitles.vtt'
         return {'id':item['id'],'title':item['title'],'source_type':'cloud','video_url':item['external_video_url'],'subtitle_url':subtitles,
-                'cloud_video_url':item['external_video_url'],'cloud_subtitle_url':subtitles,'subtitle_offset':0,'duration':None,
+                'cloud_video_url':item['external_video_url'],'cloud_subtitle_url':subtitles,'subtitle_offset':0,'subtitle_height':item['subtitle_height'],'duration':None,
                 'expires_in':14400,'expires_at':int(time.time())+14400,'visibility':'public' if item['published'] else 'owner-preview'}
     backend=backend_for(item)
     playable=item['state']=='ready' or (owner and item['state']=='bin' and item['bin_previous_state']=='ready' and bool(item['purge_after'] and item['purge_after']>time.time()))
@@ -458,7 +460,7 @@ def playback(item,owner=False):
             'source_type':'cloud' if media_sources.cloud_selected(item['id']) else 'local',
             'cloud_video_url':media_sources.cloud_url(item['object_key']),
             'cloud_subtitle_url':item['external_subtitle_url'] or media_sources.cloud_url(item['subtitle_key']),
-            'subtitle_offset':item['subtitle_offset'],
+            'subtitle_offset':item['subtitle_offset'],'subtitle_height':item['subtitle_height'],
             'duration':item['duration'],'expires_in':ttl,'expires_at':int(time.time())+ttl,'visibility':'unlisted' if item['published'] else 'owner-preview'}
 
 

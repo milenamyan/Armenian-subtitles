@@ -2,9 +2,15 @@
   'use strict';
   const $=id=>document.getElementById(id),video=$('hosted-player'),track=$('armenian-track'),progress=globalThis.HaySubProgress;
   const id=new URLSearchParams(location.search).get('id');
-  let item=null,blob=null,attempt=0,ready=false,lastSave=0,captionError=false;
+  let item=null,blob=null,attempt=0,ready=false,lastSave=0,captionError=false,captionsEnabled=true;
   function message(text){$('watch-status').textContent=text;$('watch-status').hidden=!text;}
-  function subtitles(){if(track.track)track.track.mode=$('subtitle-choice').value==='hy'?'showing':'disabled';}
+  function subtitles(){
+    if(track.track){
+      track.track.mode=captionsEnabled?'showing':'disabled';
+      const height=item?.subtitle_height||0;
+      for(const cue of track.track.cues||[]){cue.snapToLines=height===0;cue.line=height===0?-1:100-height;cue.lineAlign='end';}
+    }
+  }
   function save(){if(ready&&!video.seeking)progress.save(id,video.currentTime,video.duration);}
   async function load(){
     const token=++attempt,position=ready?video.currentTime:null;
@@ -23,21 +29,19 @@
     if(token!==attempt){if(newBlob)URL.revokeObjectURL(newBlob);return;}
     if(captions)track.src=captions;else track.removeAttribute('src');
     const old=blob;blob=newBlob;if(old)URL.revokeObjectURL(old);
-    track.default=$('subtitle-choice').value==='hy';$('subtitle-choice').disabled=!captions;
+    track.default=captionsEnabled;
     video.addEventListener('loadedmetadata',()=>{
       if(token!==attempt)return;
       const saved=progress.read(id,video.duration),target=position??saved?.position??0;
       if(Number.isFinite(video.duration)&&target>0)video.currentTime=Math.min(target,Math.max(0,video.duration-.1));
-      ready=true;lastSave=Date.now();video.playbackRate=Number($('speed').value);progress.rememberDuration(id,video.duration);subtitles();if(!captionError)message('');
+      ready=true;lastSave=Date.now();progress.rememberDuration(id,video.duration);subtitles();if(!captionError)message('');
     },{once:true});
-    video.src=item.video_url;video.hidden=false;$('watch-controls').hidden=false;video.load();
+    video.src=item.video_url;video.hidden=false;video.load();
   }
   track.addEventListener('load',subtitles);
   track.addEventListener('error',()=>{captionError=true;message('Ենթագրերը չեն բեռնվել։ Ստուգիր ենթագրի հղումը և R2 CORS կարգավորումը։');});
-  $('subtitle-choice').addEventListener('change',subtitles);
   // Reflect native mobile caption-menu choices without forcing captions back on.
-  video.textTracks.addEventListener?.('change',()=>{if(track.track)$('subtitle-choice').value=track.track.mode==='showing'?'hy':'off';});
-  $('speed').addEventListener('change',()=>{video.playbackRate=Number($('speed').value);});
+  video.textTracks.addEventListener?.('change',()=>{if(ready&&track.track)captionsEnabled=track.track.mode==='showing';});
   video.addEventListener('timeupdate',()=>{if(Date.now()-lastSave>=5000){save();lastSave=Date.now();}});
   video.addEventListener('pause',save);video.addEventListener('seeked',save);
   video.addEventListener('ended',()=>{progress.clear(id);});

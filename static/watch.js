@@ -18,21 +18,16 @@
   if(cloudTrack)track.removeAttribute('src');
   let statusError=false;
   function message(text,error=false){statusError=error;status.textContent=text;status.hidden=!text;status.classList.toggle('error',error);}
-  const subtitleUp=$('watch-subtitle-up'),subtitleDown=$('watch-subtitle-down');
-  const heightKey='haysub-subtitle-height-buttons';
   function validHeight(value){const number=Number(value);return value!=null&&Number.isFinite(number)?Math.max(0,Math.min(40,number)):10;}
-  let height=10;
+  let height=0;
   let nativeFullscreen=false;
-  try{height=validHeight(globalThis.localStorage?.getItem(heightKey));}catch{}
   function positionSubtitles(){
-    if(subtitleUp)subtitleUp.disabled=height>=40;
-    if(subtitleDown)subtitleDown.disabled=height<=0;
     for(const item of video.textTracks){
       for(const cue of item.cues||[]){
         // Native bottom placement lets the browser make room for playback controls.
         // The mobile native player owns its caption viewport. Percentage positions
         // from the inline page can leave captions outside that viewport.
-        const nativePlacement=nativeFullscreen||document.fullscreenElement===video;
+        const nativePlacement=height===0;
         cue.snapToLines=nativePlacement||height===0;
         cue.line=nativePlacement?'auto':height===0?-1:100-height;
         cue.lineAlign=nativePlacement?'start':'end';
@@ -43,12 +38,6 @@
     for(const item of video.textTracks)item.mode=($('watch-subtitles')?.value||'hy')==='hy'?'showing':'disabled';
     positionSubtitles();
   }
-  function moveSubtitles(amount){
-    height=validHeight(height+amount);positionSubtitles();
-    try{globalThis.localStorage?.setItem(heightKey,String(height));}catch{}
-  }
-  subtitleUp?.addEventListener('click',()=>moveSubtitles(2));
-  subtitleDown?.addEventListener('click',()=>moveSubtitles(-2));
   video.addEventListener('webkitbeginfullscreen',()=>{nativeFullscreen=true;positionSubtitles();});
   video.addEventListener('webkitendfullscreen',()=>{nativeFullscreen=false;positionSubtitles();});
   video.addEventListener('webkitpresentationmodechanged',()=>{
@@ -163,6 +152,7 @@
       if(token!==operation){if(captions.blob)URL.revokeObjectURL(captions.blob);return;}
       $('watch-title').textContent=access.title;document.title=access.title+' · HaySub';
       if($('watch-visibility'))$('watch-visibility').textContent=ownerPlayback?'Մասնավոր նախադիտում․ միայն սեփականատիրոջ համար։':access.visibility==='public'?'': 'Այս տեսանյութը ցանկում հրապարակված չէ․ հղումն ունեցող ցանկացած անձ կարող է դիտել։ Սա գաղտնաբառով պաշտպանություն չէ։';
+      height=validHeight(access.subtitle_height??0);
       loadMedia(cloudVideo?access.cloud_video_url:access.video_url,captions,position,speed,wasPlaying||playSelection,token);
       playSelection=false;
       timer=setTimeout(()=>connect(true),Math.max(1000,(access.expires_in-30)*1000));
@@ -212,6 +202,11 @@
   $('watch-retry')?.addEventListener('click',()=>direct?loadDirect(direct.videoUrl,direct.subtitleUrl,true):connect(true));
   $('watch-close')?.addEventListener('click',()=>{closePlayer();message('');});
   window.addEventListener('haysub-close-video',()=>{closePlayer();message('');});
+  window.addEventListener('haysub-subtitle-height',event=>{
+    const detail=event.detail;
+    if(!detail||!ownerPlayback||!endpoint.endsWith('/'+detail.id+'/playback'))return;
+    height=validHeight(detail.height);positionSubtitles();
+  });
   window.addEventListener('haysub-play-video',event=>{
     const selected=event.detail;
     if(!inline||!selected||!/^[a-f0-9]{32}$/.test(selected.id))return;

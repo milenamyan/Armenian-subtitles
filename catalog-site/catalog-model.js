@@ -13,6 +13,7 @@
     return data.films.map(item=>{
       if(!item||typeof item.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(item.id)||ids.has(item.id))throw Error('Each film needs a unique id.');
       ids.add(item.id);
+      if(item.subtitle_height!==undefined&&(!Number.isInteger(item.subtitle_height)||item.subtitle_height<0||item.subtitle_height>40))throw Error('Invalid subtitle height.');
       if(item.published!==undefined&&typeof item.published!=='boolean')throw Error('published must be true or false.');
       if(typeof item.title!=='string'||!item.title.trim())throw Error('Each film needs a title.');
       const poster=item.poster_url||'';

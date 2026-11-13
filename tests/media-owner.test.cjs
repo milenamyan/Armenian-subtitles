@@ -38,6 +38,17 @@ test('catalog export status distinguishes local save, skipped films and retryabl
   state.value='error';await h.$('hosted-refresh').fire('click');assert.match(status.textContent,/library change was saved/);assert.match(status.textContent,/retries/);
   state.value='saved';await h.$('hosted-refresh').fire('click');assert.match(status.textContent,/updated locally/);
 });
+
+test('owner height controls preview changes and persist only when Save is clicked',async()=>{
+  const h=harness();await flush();
+  const card=h.$('hosted-completed-videos').children[0],editor=card.children[5];
+  const [label,up,down,value,save]=editor.children;
+  assert.equal(save.disabled,true);await up.fire('click');assert.equal(value.textContent,'2%');
+  assert.equal(h.played.at(-1).type,'haysub-subtitle-height');assert.equal(h.played.at(-1).detail.height,2);
+  assert.equal(h.calls.some(([,options])=>options.method==='PATCH'),false);
+  await save.fire('click');assert.equal(h.data[0].subtitle_height,2);assert.equal(save.disabled,true);
+  await down.fire('click');assert.equal(value.textContent,'0%');
+});
 test('saved posters appear in the header after refreshing media',async()=>{
   const h=harness();await flush();
   const card=h.$('hosted-completed-videos').children[0],poster=card.children[0].children[1].children[2];

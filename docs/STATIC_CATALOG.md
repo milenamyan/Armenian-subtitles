@@ -49,6 +49,13 @@ update `catalog-site/catalog.json` and its public cover images:
   boolean acts as the on/off switch. Never-published private films are excluded.
 - Renaming changes its title; saving a cover copies the new image into
   `catalog-site/assets/posters/` with a versioned filename.
+- Each film's owner-only **Ենթագրերի բարձրություն** controls move the captions
+  up/down in its open owner preview. Click **Պահել դիրքը** to save that film's
+  height. It persists in SQLite and exports as `subtitle_height` (0–40 percent
+  above the bottom; 0 uses browser placement). Viewers have no height controls.
+  The published site uses this value after the changed `catalog-site` files
+  are committed and deployed. Device-native players may apply their own
+  caption layout rules during native fullscreen.
 - Deleting a Cloud entry or moving a managed film to the bin removes its listing
   and generated cover. Restoring a binned film keeps it private until published.
 

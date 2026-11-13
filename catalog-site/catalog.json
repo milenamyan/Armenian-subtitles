@@ -2,20 +2,35 @@
   "version": 1,
   "films": [
     {
+      "id": "a54ade7bced54ee8883339c1fbbd7606",
+      "title": "Եղբայրներ",
+      "published": false,
+      "video_url": "https://pub-dbe28d8bc48f4d36bd6ae474f7784080.r2.dev/data/videos/%D4%B5%D5%B2%D5%A2%D5%A1%D5%B5%D6%80%D5%B6%D5%A5%D6%80.mp4",
+      "subtitle_url": "https://pub-dbe28d8bc48f4d36bd6ae474f7784080.r2.dev/data/subtitles/%D4%B5%D5%B2%D5%A2%D5%A1%D5%B5%D6%80%D5%B6%D5%A5%D6%80/armenian.srt",
+      "subtitle_offset": 0,
+      "subtitle_height": 0,
+      "duration": 6278.375333,
+      "poster_url": "assets/posters/a54ade7bced54ee8883339c1fbbd7606-d5084eea8139.jpg"
+    },
+    {
       "id": "3a12457ad17b4017bd61051188cd954c",
       "title": "Երկնային արքայություն",
+      "published": true,
       "video_url": "https://pub-dbe28d8bc48f4d36bd6ae474f7784080.r2.dev/data/videos/%D4%B5%D6%80%D5%AF%D5%B6%D5%A1%D5%B5%D5%AB%D5%B6%20%D5%A1%D6%80%D6%84%D5%A1%D5%B5%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6.mp4",
       "subtitle_url": "https://pub-dbe28d8bc48f4d36bd6ae474f7784080.r2.dev/data/subtitles/%D4%B5%D6%80%D5%AF%D5%B6%D5%A1%D5%B5%D5%AB%D5%B6%20%D5%A1%D6%80%D6%84%D5%A1%D5%B5%D5%B8%D6%82%D5%A9%D5%B5%D5%B8%D6%82%D5%B6_hy/armenian.srt",
       "subtitle_offset": 0,
+      "subtitle_height": 0,
       "duration": 8673.237,
       "poster_url": "assets/posters/3a12457ad17b4017bd61051188cd954c-2544bc543356.jpg"
     },
     {
       "id": "0e2e2128cc254b83a3fc8f6ab18ab791",
       "title": "22 Փամփուշտ",
+      "published": true,
       "video_url": "https://pub-dbe28d8bc48f4d36bd6ae474f7784080.r2.dev/data/videos/22%20%D5%93%D5%A1%D5%B4%D6%83%D5%B8%D6%82%D5%B7%D5%BF.mp4",
       "subtitle_url": "https://pub-dbe28d8bc48f4d36bd6ae474f7784080.r2.dev/data/subtitles/22%20%D5%93%D5%A1%D5%B4%D6%83%D5%B8%D6%82%D5%B7%D5%BF/armenian.srt",
       "subtitle_offset": 0,
+      "subtitle_height": 0,
       "duration": 6767.571882,
       "poster_url": "assets/posters/0e2e2128cc254b83a3fc8f6ab18ab791-89bea4723a7c.jpg"
     }

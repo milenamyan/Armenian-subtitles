@@ -134,3 +134,22 @@ def test_public_mode_cannot_export_local_catalog(synced, monkeypatch):
     monkeypatch.setenv('HAYSUB_PUBLIC', '1')
     assert catalog_sync.sync() == 'disabled'
     assert (site / 'catalog.json').read_bytes() == before
+
+
+def test_saved_height_is_per_film_persistent_and_exported_to_public_playback(synced):
+    client, site = synced
+    first = add(client).json()['id']
+    second = add(client, 'https://media.example.org/other.mp4').json()['id']
+    path = '/api/owner/media/' + first
+    assert client.patch(path, json={'subtitle_height': 18}).json()['subtitle_height'] == 18
+    assert media_db.get(first)['subtitle_height'] == 18
+    assert media_db.get(second)['subtitle_height'] == 0
+    exported = {film['id']: film for film in films(site)}
+    assert exported[first]['subtitle_height'] == 18
+    assert exported[second]['subtitle_height'] == 0
+    assert client.get('/api/public/hosted/' + first + '/playback').json()['subtitle_height'] == 18
+    for invalid in (-1, 41, 2.5, True):
+        assert client.patch(path, json={'subtitle_height': invalid}).status_code == 422
+    assert media_db.get(first)['subtitle_height'] == 18
+    with TestClient(main.app) as reopened:
+        assert reopened.get(path).json()['subtitle_height'] == 18

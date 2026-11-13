@@ -47,7 +47,7 @@ test('static player reads JSON and R2 only, converts SRT, resumes without autopl
   assert.match(await h.blobs[0].text(),/00:00:03.000 --> 00:00:05.000/);
   await video.fire('pause');assert.equal(h.writes.length,0);
   await video.fire('loadedmetadata');assert.equal(video.currentTime,120);assert.equal(video.paused,true);assert.equal(track.track.mode,'showing');
-  track.track.mode='disabled';h.events['tracks:change']();assert.equal(h.node('subtitle-choice').value,'off');
+  track.track.mode='disabled';h.events['tracks:change']();
   await track.fire('load');assert.equal(track.track.mode,'disabled');
   await video.fire('pause');assert.equal(h.writes[0][1],120);
   assert.equal(h.node('watch-title').textContent,film.title);
@@ -60,8 +60,14 @@ test('direct VTT remains an HTTP native track without blob conversion',async()=>
 
 test('subtitle failure keeps video playable and reports the caption failure',async()=>{
   const h=harness({subtitleFails:true});await flush();await h.node('hosted-player').fire('loadedmetadata');
-  assert.equal(h.node('hosted-player').src,film.video_url);assert.equal(h.node('hosted-player').hidden,false);assert.equal(h.node('subtitle-choice').disabled,true);
+  assert.equal(h.node('hosted-player').src,film.video_url);assert.equal(h.node('hosted-player').hidden,false);
   assert.match(h.node('watch-status').textContent,/R2 CORS/);assert.equal(h.node('watch-status').hidden,false);
+});
+
+test('native subtitle cues use the saved film height without viewer controls',async()=>{
+  const h=harness({entry:{...film,subtitle_height:18}});await flush();
+  const track=h.node('armenian-track');track.track.cues=[{}];await track.fire('load');
+  assert.equal(track.track.cues[0].line,82);assert.equal(track.track.cues[0].snapToLines,false);
 });
 
 test('catalog renders searchable film links and literal titles without backend requests',async()=>{
