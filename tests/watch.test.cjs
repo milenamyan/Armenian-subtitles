@@ -1,5 +1,22 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
+
+test('native mobile fullscreen uses automatic cue placement and restores inline height without enabling disabled captions',async()=>{
+  const h=harness();await flush();
+  const video=h.$('hosted-player'),captions=video.textTracks[0],cue={};captions.cues=[cue];
+  await h.$('armenian-track').fire('load');
+  await h.$('watch-subtitle-up').fire('click');assert.equal(cue.line,88);
+  video.currentTime=42;const src=h.$('armenian-track').src;
+  await video.fire('webkitbeginfullscreen');
+  assert.equal(cue.line,'auto');assert.equal(cue.snapToLines,true);assert.equal(cue.lineAlign,'start');
+  assert.equal(captions.mode,'showing');assert.equal(video.currentTime,42);assert.equal(h.$('armenian-track').src,src);
+  // Respect a viewer turning captions off using the native fullscreen menu.
+  captions.mode='disabled';await video.fire('webkitendfullscreen');
+  assert.equal(captions.mode,'disabled');assert.equal(cue.line,88);assert.equal(cue.snapToLines,false);
+  assert.equal(cue.lineAlign,'end');
+  video.webkitPresentationMode='picture-in-picture';await video.fire('webkitpresentationmodechanged');assert.equal(cue.line,'auto');
+  video.webkitPresentationMode='inline';await video.fire('webkitpresentationmodechanged');assert.equal(cue.line,88);
+});
 test('caption height buttons persist changes across reload and replacement tracks',async()=>{
   const saved=new Map(),storage={getItem:key=>saved.get(key),setItem:(key,value)=>saved.set(key,value)};
   const h=harness(200,false,true,false,false,{storage});await flush();

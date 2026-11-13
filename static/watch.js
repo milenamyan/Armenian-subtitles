@@ -22,6 +22,7 @@
   const heightKey='haysub-subtitle-height-buttons';
   function validHeight(value){const number=Number(value);return value!=null&&Number.isFinite(number)?Math.max(0,Math.min(40,number)):10;}
   let height=10;
+  let nativeFullscreen=false;
   try{height=validHeight(globalThis.localStorage?.getItem(heightKey));}catch{}
   function positionSubtitles(){
     if(subtitleUp)subtitleUp.disabled=height>=40;
@@ -29,9 +30,12 @@
     for(const item of video.textTracks){
       for(const cue of item.cues||[]){
         // Native bottom placement lets the browser make room for playback controls.
-        cue.snapToLines=height===0;
-        cue.line=height===0?-1:100-height;
-        cue.lineAlign='end';
+        // The mobile native player owns its caption viewport. Percentage positions
+        // from the inline page can leave captions outside that viewport.
+        const nativePlacement=nativeFullscreen||document.fullscreenElement===video;
+        cue.snapToLines=nativePlacement||height===0;
+        cue.line=nativePlacement?'auto':height===0?-1:100-height;
+        cue.lineAlign=nativePlacement?'start':'end';
       }
     }
   }
@@ -45,6 +49,13 @@
   }
   subtitleUp?.addEventListener('click',()=>moveSubtitles(2));
   subtitleDown?.addEventListener('click',()=>moveSubtitles(-2));
+  video.addEventListener('webkitbeginfullscreen',()=>{nativeFullscreen=true;positionSubtitles();});
+  video.addEventListener('webkitendfullscreen',()=>{nativeFullscreen=false;positionSubtitles();});
+  video.addEventListener('webkitpresentationmodechanged',()=>{
+    nativeFullscreen=video.webkitPresentationMode==='fullscreen'||video.webkitPresentationMode==='picture-in-picture';
+    positionSubtitles();
+  });
+  document.addEventListener?.('fullscreenchange',positionSubtitles);
   positionSubtitles();
   function returnPlayerHome(){
     if(stage&&stageHome&&stage.parentElement!==stageHome)stageHome.append(stage);
