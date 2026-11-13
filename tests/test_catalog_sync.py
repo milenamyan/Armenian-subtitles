@@ -56,9 +56,11 @@ def test_owner_actions_sync_listings_titles_and_versioned_covers(synced):
     assert second_cover.read_bytes() == jpeg
 
     assert client.patch(path, json={'published': False}).status_code == 200
-    assert films(site) == [] and not second_cover.exists()
+    assert len(films(site)) == 1 and films(site)[0]['published'] is False
+    assert films(site)[0]['title'] == 'Renamed film'
+    assert second_cover.read_bytes() == jpeg
     assert client.patch(path, json={'published': True}).status_code == 200
-    assert films(site)[0]['id'] == identity and second_cover.read_bytes() == jpeg
+    assert films(site)[0]['id'] == identity and films(site)[0]['published'] is True and second_cover.read_bytes() == jpeg
     assert client.delete(path).status_code == 200
     assert films(site) == [] and not second_cover.exists()
 
@@ -76,15 +78,15 @@ def test_worker_bin_restore_and_hidden_changes_are_picked_up_by_list_refresh(syn
     assert films(site) == []
     assert media_db.restore_video(identity)
     client.get('/api/owner/media')
-    assert films(site) == []  # Restored films remain private.
+    assert len(films(site)) == 1 and films(site)[0]['published'] is False
     assert client.patch('/api/owner/media/' + identity, json={'published': True}).status_code == 200
     assert films(site)[0]['id'] == identity
     monkeypatch.setenv('HAYSUB_HIDDEN_VIDEO_IDS', identity)
     client.get('/api/owner/media')
-    assert films(site) == []
+    assert len(films(site)) == 1 and films(site)[0]['published'] is False
     media_db.update(identity, list_restored=1)
     client.get('/api/owner/media')
-    assert films(site)[0]['id'] == identity
+    assert films(site)[0]['id'] == identity and films(site)[0]['published'] is True
 
 
 def test_bad_new_link_does_not_prevent_removing_an_old_published_film(synced):
@@ -95,7 +97,7 @@ def test_bad_new_link_does_not_prevent_removing_an_old_published_film(synced):
     assert [film['id'] for film in films(site)] == [original]
     response = client.patch('/api/owner/media/' + original, json={'published': False})
     assert response.status_code == 200
-    assert films(site) == []
+    assert len(films(site)) == 1 and films(site)[0]['published'] is False
     assert 'secret' not in (site / 'catalog.json').read_text()
 
 

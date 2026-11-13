@@ -13,12 +13,13 @@
     return data.films.map(item=>{
       if(!item||typeof item.id!=='string'||!/^[a-zA-Z0-9_-]{1,100}$/.test(item.id)||ids.has(item.id))throw Error('Each film needs a unique id.');
       ids.add(item.id);
+      if(item.published!==undefined&&typeof item.published!=='boolean')throw Error('published must be true or false.');
       if(typeof item.title!=='string'||!item.title.trim())throw Error('Each film needs a title.');
       const poster=item.poster_url||'';
       if(poster&&!/^assets\/posters\/[a-zA-Z0-9_-]+\.(png|jpg|webp)$/.test(poster))publicUrl(poster);
       const offset=item.subtitle_offset??0;if(!Number.isFinite(offset)||Math.abs(offset)>86400)throw Error('Invalid subtitle offset.');
       return {...item,title:item.title.trim(),video_url:publicUrl(item.video_url),subtitle_url:publicUrl(item.subtitle_url,true),poster_url:poster,subtitle_offset:offset};
-    });
+    }).filter(item=>item.published!==false);
   }
   function durationText(seconds){if(!Number.isFinite(seconds)||seconds<=0)return '—:—';const total=Math.floor(seconds),hours=Math.floor(total/3600),minutes=Math.floor(total%3600/60);return (hours?hours+':'+String(minutes).padStart(2,'0'):minutes)+':'+String(total%60).padStart(2,'0');}
   const model={validate,publicUrl,durationText};

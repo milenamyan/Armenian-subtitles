@@ -20,7 +20,7 @@ def test_export_preserves_database_and_excludes_private_bin_and_local_only(tmp_p
     for n, published, state in ((1, 1, 'ready'), (2, 0, 'ready'), (3, 1, 'bin'), (4, 1, 'ready')):
         db.execute('INSERT INTO hosted_videos VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
                    (str(n) * 32, '<Film & Հայերեն>', 'videos/Film name.mp4',
-                    'subtitles/Film name/armenian.srt', published, state, n, n,
+                    'subtitles/Film name/armenian.srt', published, state, n if published else None, n,
                     None, None, 2, b'poster-bytes', 'image/png', 3600))
     db.commit()
     db.close()

@@ -50,7 +50,8 @@ def sync():
             data, skipped = export_library(storage.DB, config, target, strict=False)
             save_manifest(target, data)
             _fingerprint = marker
-            _status = {'state': 'warning' if skipped else 'saved', 'films': len(data['films']),
+            _status = {'state': 'warning' if skipped else 'saved', 'films': sum(item['published'] for item in data['films']),
+                       'hidden': sum(not item['published'] for item in data['films']),
                        'skipped': skipped, 'updated': time.time()}
         except Exception:
             # The library operation has already committed: report the separate

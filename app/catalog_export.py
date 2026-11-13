@@ -34,6 +34,8 @@ def validate(data):
         if not isinstance(identity, str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,100}', identity) or identity in ids:
             raise ValueError('Each film needs a unique id containing letters, numbers, underscores or hyphens.')
         ids.add(identity)
+        if 'published' in item and not isinstance(item['published'], bool):
+            raise ValueError('published must be true or false.')
         if not isinstance(item.get('title'), str) or not item['title'].strip():
             raise ValueError('Each film needs a title.')
         public_url(item.get('video_url'))
@@ -77,11 +79,10 @@ def export_library(database, config, destination, *, strict=True):
     db = sqlite3.connect(Path(database).resolve().as_uri() + '?mode=ro', uri=True)
     db.row_factory = sqlite3.Row
     try:
-        rows = db.execute("SELECT * FROM hosted_videos WHERE published=1 AND state='ready' ORDER BY COALESCE(published_at,created) DESC").fetchall()
+        rows = db.execute("SELECT * FROM hosted_videos WHERE state='ready' AND (published=1 OR published_at IS NOT NULL) ORDER BY COALESCE(published_at,created) DESC").fetchall()
         for raw in rows:
             row = dict(raw)
-            if row['id'] in hidden and not row.get('list_restored'):
-                continue
+            visible = bool(row['published']) and not (row['id'] in hidden and not row.get('list_restored'))
             if not re.fullmatch(r'[a-f0-9]{32}', row['id']):
                 raise ValueError('Invalid saved film id.')
             external = row.get('external_video_url')
@@ -89,7 +90,7 @@ def export_library(database, config, destination, *, strict=True):
                 skipped += 1
                 continue
             try:
-                film = {'id': row['id'], 'title': row['title'],
+                film = {'id': row['id'], 'title': row['title'], 'published': visible,
                         'video_url': external or cloud(row['object_key']),
                         'subtitle_url': row.get('external_subtitle_url') or cloud(row.get('subtitle_key')),
                         'subtitle_offset': row.get('subtitle_offset') or 0}

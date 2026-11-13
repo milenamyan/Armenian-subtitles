@@ -43,10 +43,13 @@ Use your local HaySub owner page as the source of truth. With
 update `catalog-site/catalog.json` and its public cover images:
 
 - **Add to page** adds a published Cloud video.
-- **Publish / Unpublish** includes or removes the film from the JSON list.
+- **Publish / Unpublish** sets `"published": true` or `"published": false`.
+  Hiding retains the entry, links, title and cover in the file; the website skips
+  it in both the catalog and player. JSON does not support comment syntax, so the
+  boolean acts as the on/off switch. Never-published private films are excluded.
 - Renaming changes its title; saving a cover copies the new image into
   `catalog-site/assets/posters/` with a versioned filename.
-- Removing a Cloud entry or moving a managed film to the bin removes its listing
+- Deleting a Cloud entry or moving a managed film to the bin removes its listing
   and generated cover. Restoring a binned film keeps it private until published.
 
 Restart the local Python server after enabling sync. The current library is
@@ -62,6 +65,8 @@ Uploaded videos must already exist at their public Cloud links to play remotely.
 GitHub push. Avoid editing GitHub's JSON separately: the next local sync replaces
 it from your library. Existing permanent media links remain accessible after a
 film is removed from the catalog; removing a listing does not revoke R2 access.
+Hidden entries remain readable in the publicly hosted JSON file; hiding is a
+catalog visibility setting, not private media storage.
 
 For an intentionally manual setup, set `HAYSUB_STATIC_CATALOG_SYNC=0` and edit
 `catalog-site/catalog.json` directly. Add an object to `films`, separating objects
@@ -100,8 +105,10 @@ From the original project folder:
 This validates the catalog and packages it, preserving edits in catalog.json.
 While local sync is enabled, the running local app automatically replaces the
 file from its library. The CLI's explicit `--export-local` can do this on demand.
-The export reads the database without changing it, includes only published,
-ready Cloud-selected films, and excludes bin/private/local-only entries. It
+The export reads the database without changing it, includes ready Cloud-selected
+films that are published or were previously published, and excludes bin,
+never-published private, and local-only entries. Previously published films that
+are now hidden are retained with `"published": false`, including their covers. It
 loads the public Cloud base, selected IDs and prefix from the local `.env` but
 does not copy that file or its secrets to the website. Do not mix automatic
 library sync with independent GitHub-only film edits.

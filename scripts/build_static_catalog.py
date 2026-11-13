@@ -1,4 +1,4 @@
-"""Prepare a buildless public catalog. Export only explicitly published Cloud media.
+"""Prepare a buildless catalog, retaining formerly published films as hidden.
 
 Default: preserve catalog-site/catalog.json, validate it, refresh shared assets, zip.
 --export-local: replace its film list from the local SQLite library (read-only).
@@ -37,7 +37,8 @@ def main():
             backup.parent.mkdir(exist_ok=True)
             shutil.copyfile(manifest, backup)
         save_manifest(SITE, data)
-        print(f'Exported {len(data["films"])} published films; skipped {skipped} local-only films. Database unchanged.')
+        visible = sum(item.get('published', True) for item in data['films'])
+        print(f'Exported {visible} visible and {len(data["films"]) - visible} hidden films; skipped {skipped}. Database unchanged.')
     data = validate(json.loads(manifest.read_text(encoding='utf-8')))
     assets = SITE / 'assets'
     assets.mkdir(exist_ok=True)
@@ -58,7 +59,8 @@ def main():
         for path in sorted(set(files)):
             archive.write(path, 'catalog-site/' + path.relative_to(SITE).as_posix())
         archive.write(ROOT / 'docs' / 'STATIC_CATALOG.md', 'STATIC_CATALOG.md')
-    print(f'Static catalog ready: {len(data["films"])} films.\n{output}')
+    visible = sum(item.get('published', True) for item in data['films'])
+    print(f'Static catalog ready: {visible} visible, {len(data["films"]) - visible} hidden films.\n{output}')
 
 
 if __name__ == '__main__':

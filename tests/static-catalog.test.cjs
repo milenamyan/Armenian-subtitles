@@ -9,6 +9,18 @@ test('manifest accepts public media and rejects credential-bearing links and dup
   for(const video_url of ['javascript:alert(1)','http://localhost/movie.mp4','https://owner:secret@example.org/video.mp4','https://account.r2.cloudflarestorage.com/bucket/movie.mp4','https://media.example.org/video.mp4?X-Amz-Signature=secret'])assert.throws(()=>model.validate({version:1,films:[{...film,video_url}]}));
 });
 
+test('hidden films stay in JSON but are excluded from catalog and playback selection',async()=>{
+  const hidden={...film,published:false};
+  const manifest={version:1,films:[hidden]};
+  assert.equal(manifest.films.length,1);
+  assert.deepEqual(model.validate(manifest),[]);
+  assert.equal(model.validate({version:1,films:[{...hidden,published:true}]})[0].id,film.id);
+  assert.throws(()=>model.validate({version:1,films:[{...film,published:'false'}]}),/true or false/);
+  const h=harness({entry:hidden});await flush();
+  assert.deepEqual(h.requests,['catalog.json']);assert.equal(h.node('hosted-player').src,undefined);
+  assert.match(h.node('watch-title').textContent,/հասանելի չէ/);
+});
+
 test('offset WebVTT preserves cue markup/settings and removes cues shifted before zero',()=>{
   const vtt='WEBVTT\n\nfirst\n00:00.000 --> 00:01.000\nDrop\n\nsecond\n00:01.000 --> 00:04.000 align:start\n<b>Հայերեն</b>\n';
   const shifted=media.srtToVtt(vtt,-2);
