@@ -3,6 +3,8 @@ import pytest
 
 @pytest.fixture(autouse=True)
 def isolate_local_library(monkeypatch):
+    # Static catalog sync must never export fixture films into the user's site.
+    monkeypatch.setenv('HAYSUB_STATIC_CATALOG_SYNC','0')
     # Test runs must never write media into the user's configured real library.
     monkeypatch.delenv('HAYSUB_LOCAL_FLAT_LIBRARY',raising=False)
     monkeypatch.delenv('HAYSUB_LIBRARY_ROOT',raising=False)

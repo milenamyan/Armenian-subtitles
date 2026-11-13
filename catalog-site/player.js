@@ -39,7 +39,6 @@
   // Reflect native mobile caption-menu choices without forcing captions back on.
   video.textTracks.addEventListener?.('change',()=>{if(track.track)$('subtitle-choice').value=track.track.mode==='showing'?'hy':'off';});
   $('speed').addEventListener('change',()=>{video.playbackRate=Number($('speed').value);});
-  $('fullscreen').addEventListener('click',async()=>{try{if(video.webkitEnterFullscreen)video.webkitEnterFullscreen();else await video.requestFullscreen();}catch{message('Օգտագործիր նվագարկիչի լիաէկրանի կոճակը։');}});
   $('restart').addEventListener('click',()=>{progress.clear(id);video.currentTime=0;restartButton();});
   $('retry').addEventListener('click',()=>{if(item)void load();});
   video.addEventListener('timeupdate',()=>{if(Date.now()-lastSave>=5000){save();lastSave=Date.now();}});

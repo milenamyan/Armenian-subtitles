@@ -38,8 +38,34 @@ https://developers.cloudflare.com/r2/buckets/cors/
 
 ## Add, rename or remove a film
 
-Edit `catalog-site/catalog.json` in GitHub. Add an object to `films`, separating
-objects with commas:
+Use your local HaySub owner page as the source of truth. With
+`HAYSUB_STATIC_CATALOG_SYNC=1` in the local `.env`, these actions automatically
+update `catalog-site/catalog.json` and its public cover images:
+
+- **Add to page** adds a published Cloud video.
+- **Publish / Unpublish** includes or removes the film from the JSON list.
+- Renaming changes its title; saving a cover copies the new image into
+  `catalog-site/assets/posters/` with a versioned filename.
+- Removing a Cloud entry or moving a managed film to the bin removes its listing
+  and generated cover. Restoring a binned film keeps it private until published.
+
+Restart the local Python server after enabling sync. The current library is
+exported at startup, after successful owner actions, and when the video list
+refreshes. The local page reports a separate export error if writing fails and
+retries on refresh. Local-only films without configured public Cloud delivery
+are skipped, with a warning. No videos are uploaded to R2 or GitHub by this sync.
+Uploaded videos must already exist at their public Cloud links to play remotely.
+
+**The live website updates only after you commit and push the changed
+`catalog-site` folder to the GitHub repository connected to Render.** Include
+`catalog.json`, new cover files and deleted old cover files. There is no automatic
+GitHub push. Avoid editing GitHub's JSON separately: the next local sync replaces
+it from your library. Existing permanent media links remain accessible after a
+film is removed from the catalog; removing a listing does not revoke R2 access.
+
+For an intentionally manual setup, set `HAYSUB_STATIC_CATALOG_SYNC=0` and edit
+`catalog-site/catalog.json` directly. Add an object to `films`, separating objects
+with commas:
 
 ```json
 {
@@ -72,12 +98,13 @@ From the original project folder:
 ```
 
 This validates the catalog and packages it, preserving edits in catalog.json.
-Only explicit `--export-local` replaces that file from the local SQLite database.
-That export reads the database without changing it, includes only published,
+While local sync is enabled, the running local app automatically replaces the
+file from its library. The CLI's explicit `--export-local` can do this on demand.
+The export reads the database without changing it, includes only published,
 ready Cloud-selected films, and excludes bin/private/local-only entries. It
 loads the public Cloud base, selected IDs and prefix from the local `.env` but
-does not copy that file or its secrets to the website. Do not use export after
-making GitHub-only changes unless you intend to replace the list.
+does not copy that file or its secrets to the website. Do not mix automatic
+library sync with independent GitHub-only film edits.
 
 To preview, use HTTP rather than opening index.html as a file:
 

@@ -39,6 +39,8 @@ async def lifespan(app):
     if os.getenv('HAYSUB_DB'):
         storage.DB = Path(os.environ['HAYSUB_DB'])
     index_completed_translations()
+    from app import catalog_sync
+    await asyncio.to_thread(catalog_sync.sync)
     yield
     for task in tasks:
         task.cancel()

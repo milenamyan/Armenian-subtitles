@@ -226,7 +226,6 @@
     (stage||panel)?.scrollIntoView({behavior:'smooth',block:'start'});
     void connect();
   });
-  $('watch-fullscreen')?.addEventListener('click',async()=>{try{if(video.webkitEnterFullscreen)video.webkitEnterFullscreen();else if(video.requestFullscreen)await video.requestFullscreen();else message('Օգտագործիր նվագարկիչի լիաէկրանի կոճակը։');}catch{message('Օգտագործիր նվագարկիչի լիաէկրանի կոճակը։');}});
   window.addEventListener('pagehide',()=>{saveProgress();clearTimeout(timer);});
   if(inline){$('watch-title').textContent='Cloud video';message('');}
   else void connect();

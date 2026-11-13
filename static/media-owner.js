@@ -8,6 +8,16 @@
     const config={...options,cache:'no-store'};
     if(options.body&&!(options.body instanceof FormData)){config.headers={'Content-Type':'application/json'};config.body=JSON.stringify(options.body);}
     const response=await fetch(path,config);const data=await response.json();
+    const sync=response.headers?.get('X-HaySub-Catalog-Sync'),syncStatus=$('static-catalog-sync-status');
+    if(sync&&syncStatus){
+      syncStatus.hidden=false;
+      syncStatus.classList.toggle('error',sync==='error');
+      syncStatus.textContent=sync==='error'
+        ?'Your library change was saved, but the static catalog could not be updated. Check folder permissions; refreshing the library retries the export.'
+        :sync==='warning'
+          ?'Static catalog updated. Some films were skipped: they need permanent public Cloud links. Commit and push catalog-site to update the live website.'
+          :'Static catalog and covers updated locally. Commit and push catalog-site to update the live website.';
+    }
     if(!response.ok)throw Error(typeof data.detail==='string'?data.detail:'Հարցումը չհաջողվեց։ Եթե մուտքի ժամկետն ավարտվել է, կրկին մուտք գործիր /admin էջում։');return data;
   }
   function element(tag,text,cls){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(cls)node.className=cls;return node;}

@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 const labels={'Rename':'Վերանվանել','Ready with subtitles':'Պատրաստ է՝ ենթագրերով','Without subtitles':'Առանց ենթագրերի','Processing':'Մշակվում է','No saved translations yet':'Դեռ պահված թարգմանություններ չկան'};
 function assertLabel(actual,expected){assert.ok(actual===expected||actual===labels[expected],`Expected ${expected}, got ${actual}`);}
-function harness(){
+function harness(syncState={value:null}){
   const nodes=new Map(),timers=[],calls=[],events=new Map(),played=[],library=[{id:"sub",title:"Prepared Armenian subtitles"}];let fail=false;
   const data=[{id:'a'.repeat(32),title:'Film one',size:100,state:'ready',can_preview:true,published:false,has_subtitles:false,subtitle_offset:0,uploaded_bytes:100,preview_url:'/preview/one',updated:1}];
   function node(tag,id){return {tag,id,children:[],listeners:new Map(),value:'',files:[],textContent:'',hidden:false,disabled:false,dataset:{},classList:{toggle(){}},
@@ -25,10 +25,19 @@ function harness(){
       if(fail)return {ok:false,json:async()=>({detail:'Title could not be saved'})};
       data[0]={...data[0],...JSON.parse(options.body),updated:2};return {ok:true,json:async()=>({...data[0]})};
     }
-    return {ok:true,json:async()=>data.map(item=>({...item}))};
+    return {ok:true,headers:{get:()=>syncState.value},json:async()=>data.map(item=>({...item}))};
   }});
   return {$,timers,calls,data,library,events,played,fail:()=>fail=true};
 }
+
+test('catalog export status distinguishes local save, skipped films and retryable errors',async()=>{
+  const state={value:'saved'},h=harness(state);await flush();
+  const status=h.$('static-catalog-sync-status');
+  assert.equal(status.hidden,false);assert.match(status.textContent,/updated locally/);assert.match(status.textContent,/Commit and push/);
+  state.value='warning';await h.$('hosted-refresh').fire('click');assert.match(status.textContent,/permanent public Cloud links/);
+  state.value='error';await h.$('hosted-refresh').fire('click');assert.match(status.textContent,/library change was saved/);assert.match(status.textContent,/retries/);
+  state.value='saved';await h.$('hosted-refresh').fire('click');assert.match(status.textContent,/updated locally/);
+});
 test('saved posters appear in the header after refreshing media',async()=>{
   const h=harness();await flush();
   const card=h.$('hosted-completed-videos').children[0],poster=card.children[0].children[1].children[2];

@@ -64,7 +64,6 @@ test('watch uses direct media and native Armenian track without inserting subtit
   await h.$('armenian-track').fire('load');assert.equal(h.$('hosted-player').textTracks[0].mode,'showing');
   h.$('watch-subtitles').value='off';await h.$('watch-subtitles').fire('change');assert.equal(h.$('hosted-player').textTracks[0].mode,'disabled');
   h.$('watch-speed').value='1.5';await h.$('watch-speed').fire('change');assert.equal(h.$('hosted-player').playbackRate,1.5);
-  await h.$('watch-fullscreen').fire('click');assert.equal(h.$('hosted-player').fullscreen,true);
 });
 
 test('minimal public player loads native Armenian subtitles without supplemental controls',async()=>{

@@ -34,7 +34,20 @@ class BoundedControlRoute(APIRoute):
                 # Starlette replays its cached body to the JSON/multipart parser.
                 # This cache is strictly bounded; video bodies never enter it.
                 request._body=bytes(body)
-            return await handler(request)
+            response = await handler(request)
+            # Export after the successful owner operation has committed. Also
+            # check on list refresh to pick up folder-worker changes and retry
+            # a failed export. Public deployments never write static files.
+            if request.url.path.startswith('/api/owner/media') and (
+                request.method in ('POST','PATCH','DELETE') or
+                request.method=='GET' and request.url.path=='/api/owner/media'
+            ) and response.status_code < 400:
+                import asyncio
+                from app import catalog_sync
+                state = await asyncio.to_thread(catalog_sync.sync)
+                if state != 'disabled':
+                    response.headers['X-HaySub-Catalog-Sync'] = state
+            return response
         return bounded
 
 
