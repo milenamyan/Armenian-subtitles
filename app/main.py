@@ -51,8 +51,6 @@ app = FastAPI(title='HaySub', lifespan=lifespan)
 app.middleware('http')(public.access_control)
 app.include_router(public.router)
 app.include_router(media_api.router)
-from app import analytics
-app.include_router(analytics.router)
 app.mount('/static', StaticFiles(directory=ROOT / 'static'), name='static')
 
 

@@ -509,9 +509,6 @@ def watch(identity:str):
 
 def watch_page(item,owner=False):
     template=(STATIC/'watch.html').read_text(encoding='utf-8')
-    if not owner and not public.public_mode():
-        digest=hashlib.sha256((STATIC/'visit-tracker.js').read_bytes()).hexdigest()[:12]
-        template=template.replace('</body>','<script src="/static/visit-tracker.js?v='+digest+'"></script></body>')
     if owner:
         template=template.replace('<video id="hosted-player"',(STATIC/'owner-watch-tools.html').read_text(encoding='utf-8')+'<video id="hosted-player"')
         template=template.replace('</video>','</video>'+(STATIC/'owner-subtitle-position.html').read_text(encoding='utf-8')+(STATIC/'owner-watch-controls.html').read_text(encoding='utf-8'))

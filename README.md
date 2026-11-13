@@ -1,19 +1,5 @@
 # HaySub
 
-## Local visitor analytics
-
-Open **Այցելություններ** in the owner header or visit `/admin/analytics`.
-The local `/catalog` and public watch pages record anonymous per-tab visits,
-approximate device/browser/OS, server entry time, and visible-tab duration.
-Navigation within that tab stays one visit; 30 idle minutes starts another.
-The report offers 1/7/30/90-day summaries and the latest 200 visits, with times
-shown in UTC+4. Heartbeats arrive every 15 seconds and on hiding/leaving the page;
-abrupt shutdowns, browser privacy settings and sleep can reduce recorded time.
-No IP addresses, raw user agents or persistent device IDs are stored. Old rows
-are pruned after 90 days when new visits arrive. This is local-only: no collector
-is included in `catalog-site`, and public-server mode disables these endpoints.
-Historical visits before enabling collection cannot be reconstructed.
-
 ## Static public catalog (no server or persistent disk)
 
 The buildless public website is in [`catalog-site/`](catalog-site/). Its film list

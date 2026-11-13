@@ -207,8 +207,6 @@ def public_download(identity: str):
 @router.get('/catalog')
 def viewer_catalog():
     template=(STATIC/'public.html').read_text(encoding='utf-8')
-    if not public_mode():
-        template=template.replace('</body>','<script src="/static/visit-tracker.js"></script></body>')
     def versioned(match):
         name=match.group(1)
         digest=hashlib.sha256((STATIC/name).read_bytes()).hexdigest()[:12]

@@ -51,6 +51,3 @@
 #hosted-completed-videos .hosted-poster-form .poster-preview{grid-row:1/3;width:42px;height:63px;border-radius:5px}
 #hosted-completed-videos .hosted-poster-form button{min-height:26px;padding:4px 8px;font-size:10px}
 @media(max-width:480px){#hosted-completed-videos .hosted-poster-form{margin-left:0}}
-
-
-.owner-analytics-link{margin-left:auto;flex-shrink:0;color:var(--accent);font-size:11px;text-decoration:none;padding:8px 10px;border:1px solid var(--line);border-radius:7px}.owner-analytics-link:hover{background:var(--panel)}
