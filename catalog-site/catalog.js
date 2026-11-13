@@ -9,7 +9,10 @@
     const thumbnail=element('div',undefined,'movie-thumbnail'),image=element('img');image.alt='';image.loading='lazy';image.width=240;image.height=360;image.src=item.poster_url||'assets/poster-fallback.svg';
     image.addEventListener('error',()=>{image.src='assets/poster-fallback.svg';},{once:true});thumbnail.append(image);
     const saved=progress.read(item.id,item.duration),duration=item.duration||progress.duration(item.id)||saved?.duration;
-    thumbnail.append(element('span',model.durationText(duration),'movie-duration'));
+    const badge=element('span',model.durationText(duration),'movie-duration');thumbnail.append(badge);
+    if(!duration)progress.loadDuration?.(item.id,item.video_url).then(length=>{
+      if(length){item.duration=length;badge.textContent=model.durationText(length);}
+    });
     if(saved){const bar=element('span',undefined,'movie-progress'),fill=element('span');fill.style.width=Math.min(100,saved.position/saved.duration*100)+'%';bar.setAttribute('aria-hidden','true');bar.append(fill);thumbnail.append(bar);}
     link.append(thumbnail,element('h3',item.title));return link;
   }

@@ -174,7 +174,7 @@
     const title=$('watch-save-title').value.trim();if(!title){message('Enter a video name.',true);return;}
     const selected=direct,selectedOperation=operation;saving=true;saveControls();
     try{
-      const response=await fetch('/api/owner/media/cloud',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,video_url:selected.videoUrl,subtitle_url:selected.subtitleUrl||null})});
+      const response=await fetch('/api/owner/media/cloud',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,video_url:selected.videoUrl,subtitle_url:selected.subtitleUrl||null,duration:Number.isFinite(video.duration)&&video.duration>0?video.duration:null})});
       const saved=await response.json();if(!response.ok)throw Error(typeof saved.detail==='string'?saved.detail:'Could not add this video to the page.');
       selected.saved=saved;
       if(direct===selected&&operation===selectedOperation){

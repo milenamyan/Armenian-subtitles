@@ -15,7 +15,14 @@
     image.addEventListener('error',()=>{image.src='/static/poster-fallback.svg';},{once:true});thumbnail.append(image);
     const saved=progress.read(item.id,item.duration),duration=item.duration||progress.duration(item.id)||saved?.duration;
     const badge=element('span',Number.isFinite(duration)&&duration>0?durationText(duration):'—:—','movie-duration');
-    if(!duration)badge.title='Տևողությունը կհայտնվի տեսանյութը բացելուց հետո';
+    if(!duration&&progress.loadDuration)void (async()=>{
+      try{
+        const response=await fetch('/api/public/hosted/'+encodeURIComponent(item.id)+'/playback',{cache:'no-store'});
+        if(!response.ok)return;
+        const access=await response.json(),length=access.duration||await progress.loadDuration(item.id,access.video_url);
+        if(length){item.duration=length;badge.textContent=durationText(length);}
+      }catch{}
+    })();
     thumbnail.append(badge);
     if(saved){const bar=element('span',undefined,'movie-progress'),fill=element('span');fill.style.width=(saved.position/saved.duration*100)+'%';bar.setAttribute('aria-hidden','true');bar.append(fill);thumbnail.append(bar);}
     link.append(thumbnail,element('h3',item.title));return link;

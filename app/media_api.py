@@ -121,6 +121,7 @@ class CloudVideo(BaseModel):
     title:str=Field(min_length=1,max_length=200)
     video_url:str=Field(min_length=1,max_length=8192)
     subtitle_url:str|None=Field(default=None,max_length=8192)
+    duration:float|None=Field(default=None,gt=0,le=86400,allow_inf_nan=False)
 
 
 def external_url(value):
@@ -147,6 +148,7 @@ def save_cloud_video(body:CloudVideo):
                 and media_sources.cloud_selected(item['id'])
                 and media_sources.cloud_url(item['object_key'])==video):
             changes=dict(list_restored=1,title=title)
+            if body.duration is not None:changes['duration']=body.duration
             if subtitles:changes.update(external_subtitle_url=subtitles,subtitle_offset=0)
             db.update(item['id'],**changes)
             if not item['published'] and (item['subtitle_key'] or item['external_subtitle_url'] or subtitles):
@@ -164,6 +166,7 @@ def save_cloud_video(body:CloudVideo):
             connection.execute("INSERT INTO hosted_videos(id,title,size,fingerprint,backend,object_key,part_size,state,published,external_video_url,external_subtitle_url,created,updated) VALUES (?,?,0,?,'external',?,1,'ready',1,?,?,?,?)",
                                (identity,title,hashlib.sha256(video.encode()).hexdigest(),'external/'+identity,video,subtitles,now,now))
     db.update(identity,list_restored=1)
+    if body.duration is not None:db.update(identity,duration=body.duration)
     if not item_or_404(identity)['published_at']:db.update(identity,published_at=now)
     return summary(item_or_404(identity))
 
@@ -439,7 +442,7 @@ def playback(item,owner=False):
         if not subtitles and item['subtitle_key']:
             subtitles=('/api/owner/media/' if owner else '/api/public/hosted/')+item['id']+'/subtitles.vtt'
         return {'id':item['id'],'title':item['title'],'source_type':'cloud','video_url':item['external_video_url'],'subtitle_url':subtitles,
-                'cloud_video_url':item['external_video_url'],'cloud_subtitle_url':subtitles,'subtitle_offset':0,'subtitle_height':item['subtitle_height'],'duration':None,
+                'cloud_video_url':item['external_video_url'],'cloud_subtitle_url':subtitles,'subtitle_offset':0,'subtitle_height':item['subtitle_height'],'duration':item['duration'],
                 'expires_in':14400,'expires_at':int(time.time())+14400,'visibility':'public' if item['published'] else 'owner-preview'}
     backend=backend_for(item)
     playable=item['state']=='ready' or (owner and item['state']=='bin' and item['bin_previous_state']=='ready' and bool(item['purge_after'] and item['purge_after']>time.time()))

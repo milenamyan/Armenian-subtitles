@@ -23,6 +23,26 @@ test('blocked browser storage never prevents playback helpers',()=>{
   const {progress:p,context}=progressHarness();context.localStorage={getItem(){throw Error();},setItem(){throw Error();},removeItem(){throw Error();}};
   assert.doesNotThrow(()=>{p.save('a',50,900);p.clear('a');p.rememberDuration('a',900);});assert.equal(p.read('a'),null);assert.equal(p.duration('a'),null);
 });
+
+test('duration metadata loads without playing, shares requests, caches and releases media on success or failure',async()=>{
+  const {progress:p,context}=progressHarness(),videos=[];let timeout;
+  context.setTimeout=fn=>{timeout=fn;return 1;};context.clearTimeout=()=>{};
+  context.document={createElement(tag){
+    assert.equal(tag,'video');const events=new Map(),video={duration:6278,loads:0,
+      addEventListener:(name,fn)=>events.set(name,fn),removeEventListener:name=>events.delete(name),
+      removeAttribute(name){delete this[name];},load(){this.loads++;},fire:name=>events.get(name)()};
+    videos.push(video);return video;
+  }};
+  const result=p.loadDuration('new','https://cdn.test/new.mp4');
+  assert.equal(p.loadDuration('new','https://cdn.test/new.mp4'),result);
+  assert.equal(videos[0].preload,'metadata');assert.equal(videos[0].muted,true);
+  videos[0].fire('loadedmetadata');assert.equal(await result,6278);
+  assert.equal(videos[0].src,undefined);assert.equal(videos[0].loads,2);
+  assert.equal(await p.loadDuration('new','https://cdn.test/new.mp4'),6278);assert.equal(videos.length,1);
+  const failed=p.loadDuration('bad','https://cdn.test/bad.mp4');videos[1].fire('error');assert.equal(await failed,null);
+  const slow=p.loadDuration('slow','https://cdn.test/slow.mp4');timeout();assert.equal(await slow,null);
+  assert.equal(videos[2].src,undefined);assert.equal(p.read('new'),null);
+});
 test('catalog uses safe same-tab cards, publication order and refreshes on return',async()=>{
   const {progress:p,data}=progressHarness();p.save('a',90,900);p.save('b',120,1200);
   for(const [id,updated] of [['a',100],['b',200]]){const key='haysub:progress:v1:'+id,entry=JSON.parse(data.get(key));entry.updated=updated;data.set(key,JSON.stringify(entry));}

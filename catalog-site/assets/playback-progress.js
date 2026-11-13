@@ -21,5 +21,24 @@
   }
   function rememberDuration(id,duration){if(Number.isFinite(duration)&&duration>0)try{localStorage.setItem(prefix+'duration:'+id,String(duration));}catch{}}
   function duration(id){try{const value=Number(localStorage.getItem(prefix+'duration:'+id));return Number.isFinite(value)&&value>0?value:null;}catch{return null;}}
-  globalThis.HaySubProgress={read,save,clear,rememberDuration,duration};
+  const probes=new Map();
+  function loadDuration(id,url){
+    const cached=duration(id);if(cached)return Promise.resolve(cached);
+    if(probes.has(id))return probes.get(id);
+    const probe=new Promise(resolve=>{
+      const video=document.createElement('video');video.preload='metadata';video.muted=true;
+      let timer;
+      function finish(value){
+        clearTimeout(timer);video.removeEventListener('loadedmetadata',loaded);video.removeEventListener('error',failed);
+        video.removeAttribute('src');video.load();
+        if(value)rememberDuration(id,value);resolve(value);
+      }
+      function loaded(){finish(Number.isFinite(video.duration)&&video.duration>0?video.duration:null);}
+      function failed(){finish(null);}
+      video.addEventListener('loadedmetadata',loaded);video.addEventListener('error',failed);
+      timer=setTimeout(failed,15000);video.src=url;video.load();
+    });
+    probes.set(id,probe);probe.then(()=>probes.delete(id));return probe;
+  }
+  globalThis.HaySubProgress={read,save,clear,rememberDuration,duration,loadDuration};
 })();

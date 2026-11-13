@@ -217,6 +217,7 @@ test('after a pasted video loads, Add to page saves its title and exact loaded U
   const saved=h.calls.find(([url])=>url==='/api/owner/media/cloud');const body=JSON.parse(saved[1].body);
   assert.equal(body.title,'My movie');assert.equal(body.video_url,'https://cloud.test/data/videos/Film.mp4');
   assert.equal(body.subtitle_url,'https://cloud.test/data/subtitles/Film/armenian.srt');
+  assert.equal(body.duration,60);
   assert.deepEqual(h.events,['haysub-media-updated']);
   assert.equal(video.hidden,true);assert.equal(video.paused,true);
   assert.equal(video.currentTime,25);assert.equal(video.playbackRate,1.5);

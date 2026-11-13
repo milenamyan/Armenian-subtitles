@@ -70,6 +70,19 @@ def test_saving_the_same_video_updates_its_title_and_links_without_duplicate_ent
         assert client.get('/api/public/hosted/'+after['id']+'/playback').json()['subtitle_url']=='https://cdn.example/new.vtt'
 
 
+def test_cloud_duration_is_saved_for_first_time_visitors_and_retained_on_rename():
+    with TestClient(main.app) as client:
+        response=client.post('/api/owner/media/cloud',json={'title':'Film','video_url':VIDEO,'duration':6278.375})
+        assert response.status_code==200
+        identity=response.json()['id']
+        assert client.get('/api/public/videos').json()[0]['duration']==6278.375
+        assert client.get('/api/public/hosted/'+identity+'/playback').json()['duration']==6278.375
+        add(client,title='Renamed')
+        assert db.get(identity)['duration']==6278.375
+        for invalid in (0,-1,86401,'NaN','Infinity'):
+            assert client.post('/api/owner/media/cloud',json={'title':'Film','video_url':VIDEO,'duration':invalid}).status_code==422
+
+
 def test_add_to_page_restores_a_hidden_managed_cloud_video_without_duplicates(monkeypatch):
     from app import media_sources
     import time
