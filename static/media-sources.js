@@ -3,7 +3,6 @@
   'use strict';
   function srtToVtt(raw,offset=0){
     const text=raw.replace(/^\uFEFF/,'').replace(/\r\n?/g,'\n').trim();
-    if(/^WEBVTT(?:\s|$)/.test(text))return text+'\n';
     const seconds=value=>value.replace(',','.').split(':').reduce((total,part)=>total*60+Number(part),0);
     const stamp=value=>{
       let milliseconds=Math.max(0,Math.round(value*1000));
@@ -12,6 +11,18 @@
       return String(hours).padStart(2,'0')+':'+String(minutes).padStart(2,'0')+':'+String(Math.floor(milliseconds/1000)).padStart(2,'0')+'.'+String(milliseconds%1000).padStart(3,'0');
     };
     const escape=value=>value.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    if(/^WEBVTT(?:\s|$)/.test(text)){
+      if(!offset)return text+'\n';
+      return text.split(/\n\s*\n/).map(block=>{
+        let dropped=false;
+        const shifted=block.replace(/^(\d{2,}:\d{2}:\d{2}\.\d{3}|\d{2}:\d{2}\.\d{3})\s+-->\s+(\d{2,}:\d{2}:\d{2}\.\d{3}|\d{2}:\d{2}\.\d{3})([^\n]*)$/gm,(_,start,end,settings)=>{
+          const a=Math.max(0,seconds(start)+offset),b=seconds(end)+offset;
+          if(b<=a){dropped=true;return '';}
+          return stamp(a)+' --> '+stamp(b)+settings;
+        });
+        return dropped?null:shifted;
+      }).filter(block=>block!==null).join('\n\n')+'\n';
+    }
     const blocks=['WEBVTT'];
     for(const block of text.split(/\n\s*\n/)){
       const lines=block.split('\n'),index=lines.findIndex(line=>line.includes('-->'));

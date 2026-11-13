@@ -1,5 +1,14 @@
 # HaySub
 
+## Static public catalog (no server or persistent disk)
+
+The buildless public website is in [`catalog-site/`](catalog-site/). Its film list
+is stored in `catalog.json` and videos play directly from public R2 links.
+See [Render Static Site setup and catalog updates](docs/STATIC_CATALOG.md).
+Run `.\.venv\Scripts\python.exe scripts\build_static_catalog.py` to validate and
+package it as `dist/haysub-static-catalog.zip`. Editing this static catalog does
+not change the separate local Python app or its library.
+
 ## Overlay on other video sites
 
 HaySub 1.2 can be activated on standard HTML5 video pages outside YouTube.
