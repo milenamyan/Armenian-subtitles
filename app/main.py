@@ -56,7 +56,8 @@ app.mount('/static', StaticFiles(directory=ROOT / 'static'), name='static')
 
 @app.get('/')
 def index():
-    return FileResponse(ROOT / 'static' / ('public.html' if public.public_mode() else 'index.html'))
+    if public.public_mode():return public.viewer_catalog()
+    return FileResponse(ROOT / 'static' / 'index.html')
 
 
 @app.get('/api/config')

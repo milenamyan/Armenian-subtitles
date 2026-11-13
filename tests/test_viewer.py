@@ -25,6 +25,17 @@ def owner(client):
     assert client.post('/api/admin/login',json={'token':TOKEN},headers={'Origin':ORIGIN}).status_code==200
 
 
+def test_catalog_always_loads_current_assets_including_badge_code():
+    import hashlib
+    with TestClient(main.app,base_url=ORIGIN) as client:
+        for path in ('/', '/catalog'):
+            response=client.get(path)
+            assert response.headers['Cache-Control']=='no-store'
+            for name in ('public-catalog.js', 'viewer.css'):
+                digest=hashlib.sha256((public.STATIC/name).read_bytes()).hexdigest()[:12]
+                assert '/static/'+name+'?v='+digest in response.text
+
+
 def add(client,name):
     response=client.post('/api/owner/media/cloud',json={'title':name,'video_url':'https://cdn.example/'+name+'.mp4'},headers={'Origin':ORIGIN})
     assert response.status_code==200

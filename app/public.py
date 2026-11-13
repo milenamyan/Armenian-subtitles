@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from fastapi import APIRouter, HTTPException, Query, Request, UploadFile, File
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from pydantic import BaseModel, Field
 
 from app import storage
@@ -206,4 +206,10 @@ def public_download(identity: str):
 
 @router.get('/catalog')
 def viewer_catalog():
-    return FileResponse(STATIC/'public.html')
+    template=(STATIC/'public.html').read_text(encoding='utf-8')
+    def versioned(match):
+        name=match.group(1)
+        digest=hashlib.sha256((STATIC/name).read_bytes()).hexdigest()[:12]
+        return '/static/'+name+'?v='+digest
+    template=re.sub(r'/static/([a-zA-Z0-9_.-]+\.(?:js|css))(?:\?[^"\s<>]*)?',versioned,template)
+    return Response(template,media_type='text/html',headers={'Cache-Control':'no-store'})
