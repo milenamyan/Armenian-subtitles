@@ -109,7 +109,7 @@ def expire_bin():
 
 
 def create(item):
-    item={'subtitle_height':10,**item}
+    item={'subtitle_height':10,'is_new':1,**item}
     keys=tuple(item)
     with connect() as db:
         db.execute('INSERT INTO hosted_videos ('+','.join(keys)+') VALUES ('+','.join('?' for _ in keys)+')',tuple(item.values()))

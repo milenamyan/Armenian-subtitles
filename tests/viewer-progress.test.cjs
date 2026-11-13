@@ -4,6 +4,17 @@ function progressHarness(){
   const context={localStorage:storage};vm.runInNewContext(fs.readFileSync('static/playback-progress.js','utf8'),context);
   return {progress:context.HaySubProgress,data,context};
 }
+
+test('opened films persist separately from watch progress and stay local to each viewer',()=>{
+  const {progress:p,context}=progressHarness();
+  assert.equal(p.hasOpened('a'),false);p.markOpened('a');assert.equal(p.hasOpened('a'),true);assert.equal(p.hasOpened('b'),false);
+  p.clear('a');assert.equal(p.hasOpened('a'),true);
+  vm.runInNewContext(fs.readFileSync('static/playback-progress.js','utf8'),context);
+  assert.equal(context.HaySubProgress.hasOpened('a'),true);
+  assert.equal(progressHarness().progress.hasOpened('a'),false);
+  context.localStorage={getItem(){throw Error();},setItem(){throw Error();}};
+  context.HaySubProgress.markOpened('blocked');assert.equal(context.HaySubProgress.hasOpened('blocked'),true);
+});
 test('two stable movie IDs retain separate positions; zero and invalid values cannot overwrite progress',()=>{
   const {progress:p}=progressHarness();p.save('a',120,900);p.save('b',240,1200);
   p.save('a',0,900);p.save('a',NaN,900);p.save('a',20,Infinity);
@@ -92,6 +103,7 @@ test('returning to the catalog reloads the owner New flag and removes its badge 
   const badges=()=>$('public-videos').children[0].children[0].children.filter(item=>item.className==='movie-new-badge');
   assert.equal(badges().length,0);
   isNew=true;events.get('focus')();await flush();assert.equal(badges().length,1);assert.equal(badges()[0].textContent,'ՆՈՐ');
+  progress.markOpened('a');events.get('pageshow')();assert.equal(badges().length,0);
   isNew=false;events.get('pageshow')({persisted:true});await flush();assert.equal(badges().length,0);
   assert.equal(scrolls,1);
 });

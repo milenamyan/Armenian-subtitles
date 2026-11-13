@@ -53,6 +53,7 @@
     const response=await fetch('catalog.json',{cache:'no-store'});if(!response.ok)throw Error();
     item=globalThis.HaySubCatalog.validate(await response.json()).find(film=>film.id===id);
     if(!item){$('watch-title').textContent='Ֆիլմը հասանելի չէ';message('Վերադարձիր ֆիլմերի ցանկ։');return;}
+    progress.markOpened?.(id);
     await load();
   }catch{message('Չհաջողվեց բեռնել ֆիլմը։ Թարմացրու էջը կամ փորձիր ավելի ուշ։');}})();
 })();

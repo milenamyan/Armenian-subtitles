@@ -17,7 +17,7 @@ test('hidden films stay in JSON but are excluded from catalog and playback selec
   assert.equal(model.validate({version:1,films:[{...hidden,published:true}]})[0].id,film.id);
   assert.throws(()=>model.validate({version:1,films:[{...film,published:'false'}]}),/true or false/);
   const h=harness({entry:hidden});await flush();
-  assert.deepEqual(h.requests,['catalog.json']);assert.equal(h.node('hosted-player').src,undefined);
+  assert.deepEqual(h.requests,['catalog.json']);assert.equal(h.node('hosted-player').src,undefined);assert.deepEqual(h.opened,[]);
   assert.match(h.node('watch-title').textContent,/հասանելի չէ/);
 });
 
@@ -28,7 +28,7 @@ test('offset WebVTT preserves cue markup/settings and removes cues shifted befor
 });
 
 function harness({entry=film,subtitleFails=false}={}){
-  const nodes=new Map(),events={},requests=[],writes=[],blobs=[];
+  const nodes=new Map(),events={},requests=[],writes=[],blobs=[],opened=[];
   function node(id){if(!nodes.has(id))nodes.set(id,{value:id==='speed'?'1':'hy',hidden:true,textContent:'',listeners:new Map(),paused:true,currentTime:0,duration:900,playbackRate:1,
     addEventListener(name,fn,opts){const list=this.listeners.get(name)||[];list.push({fn,once:opts?.once});this.listeners.set(name,list);},
     async fire(name){const list=this.listeners.get(name)||[];this.listeners.set(name,list.filter(item=>!item.once));for(const item of list)await item.fn();},
@@ -36,9 +36,9 @@ function harness({entry=film,subtitleFails=false}={}){
   const track=node('armenian-track');track.track={mode:'disabled',cues:[]};node('hosted-player').textTracks={addEventListener(name,fn){events['tracks:'+name]=fn;}};
   vm.runInNewContext(fs.readFileSync('catalog-site/player.js','utf8'),{URLSearchParams,URL:class extends URL{static createObjectURL(blob){blobs.push(blob);return 'blob:captions';}static revokeObjectURL(){}},Blob,
     location:{search:'?id=film-1'},document:{getElementById:node,addEventListener(name,fn){events[name]=fn;}},window:{addEventListener(name,fn){events[name]=fn;}},
-    HaySubCatalog:model,HaySubMediaSources:media,HaySubProgress:{read:()=>({position:120,duration:900}),save:(...args)=>writes.push(args),rememberDuration(){},clear(){}},
+    HaySubCatalog:model,HaySubMediaSources:media,HaySubProgress:{read:()=>({position:120,duration:900}),save:(...args)=>writes.push(args),rememberDuration(){},clear(){},markOpened:id=>opened.push(id)},
     fetch:async url=>{requests.push(url);return url==='catalog.json'?{ok:true,json:async()=>({version:1,films:[entry]})}:{ok:!subtitleFails,text:async()=> '1\n00:00:01,000 --> 00:00:03,000\nՀայերեն'};}});
-  return {node,events,requests,writes,blobs};
+  return {node,events,requests,writes,blobs,opened};
 }
 
 test('static player reads JSON and R2 only, converts SRT, resumes without autoplay and respects native captions off',async()=>{
@@ -50,7 +50,7 @@ test('static player reads JSON and R2 only, converts SRT, resumes without autopl
   track.track.mode='disabled';h.events['tracks:change']();
   await track.fire('load');assert.equal(track.track.mode,'disabled');
   await video.fire('pause');assert.equal(h.writes[0][1],120);
-  assert.equal(h.node('watch-title').textContent,film.title);
+  assert.equal(h.node('watch-title').textContent,film.title);assert.deepEqual(h.opened,[film.id]);
 });
 
 test('direct VTT remains an HTTP native track without blob conversion',async()=>{
@@ -71,17 +71,18 @@ test('native subtitle cues use the saved film height without viewer controls',as
 });
 
 test('catalog renders searchable film links and literal titles without backend requests',async()=>{
-  const nodes=new Map(),requests=[],probes=[],entry={...film,is_new:true};
+  const nodes=new Map(),requests=[],probes=[],entry={...film,is_new:true};let opened=false;
   function element(tag){return {tag,children:[],listeners:{},style:{},value:'',hidden:true,textContent:'',append(...items){this.children.push(...items);},replaceChildren(...items){this.children=items;},setAttribute(){},addEventListener(name,fn){this.listeners[name]=fn;}};}
   const node=id=>{if(!nodes.has(id))nodes.set(id,element('div'));return nodes.get(id);};
   vm.runInNewContext(fs.readFileSync('catalog-site/catalog.js','utf8'),{
     document:{getElementById:node,createElement:element},window:{addEventListener(){},scrollTo(){}},sessionStorage:{getItem:()=>null},requestAnimationFrame:fn=>fn(),
-    HaySubCatalog:model,HaySubProgress:{read:()=>null,duration:()=>null,loadDuration:async(id,url)=>{probes.push([id,url]);return 6278;}},fetch:async url=>{requests.push(url);return {ok:true,json:async()=>({version:1,films:[entry]})};}});
+    HaySubCatalog:model,HaySubProgress:{read:()=>null,duration:()=>null,hasOpened:()=>opened,loadDuration:async(id,url)=>{probes.push([id,url]);return 6278;}},fetch:async url=>{requests.push(url);return {ok:true,json:async()=>({version:1,films:[entry]})};}});
   await flush();
   assert.deepEqual(requests,['catalog.json']);assert.equal(node('public-videos').children.length,1);
   const link=node('public-videos').children[0];assert.equal(link.href,'watch.html?id=film-1');assert.equal(link.children[1].textContent,film.title);
   assert.deepEqual(probes,[[film.id,film.video_url]]);assert.equal(link.children[0].children[1].textContent,'1:44:38');
   assert.equal(link.children[0].children.at(-1).className,'movie-new-badge');
+  opened=true;node('search').listeners.input();assert.equal(node('public-videos').children[0].children[0].children.some(node=>node.className==='movie-new-badge'),false);
   node('search').value='missing film';node('search').listeners.input();assert.equal(node('public-videos').children.length,0);assert.equal(node('catalog-status').hidden,false);
   node('search').value='ՀԱՅԵՐԵՆ';node('search').listeners.input();assert.equal(node('public-videos').children.length,1);
 });

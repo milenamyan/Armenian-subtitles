@@ -14,7 +14,7 @@
       if(length){item.duration=length;badge.textContent=model.durationText(length);}
     });
     if(saved){const bar=element('span',undefined,'movie-progress'),fill=element('span');fill.style.width=Math.min(100,saved.position/saved.duration*100)+'%';bar.setAttribute('aria-hidden','true');bar.append(fill);thumbnail.append(bar);}
-    if(item.is_new===true)thumbnail.append(element('span','ՆՈՐ','movie-new-badge'));
+    if(item.is_new===true&&!progress.hasOpened?.(item.id))thumbnail.append(element('span','ՆՈՐ','movie-new-badge'));
     link.append(thumbnail,element('h3',item.title));return link;
   }
   function render(){

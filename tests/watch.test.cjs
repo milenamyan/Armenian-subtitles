@@ -1,6 +1,13 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 
+test('opening a viewer film records it as opened while owner previews do not',async()=>{
+  const opened=[],progress={markOpened:id=>opened.push(id)};
+  harness(200,false,true,false,false,{progress});await flush();assert.deepEqual(opened,['a'.repeat(32)]);
+  opened.length=0;harness(200,true,true,false,false,{progress});await flush();assert.deepEqual(opened,[]);
+  harness(404,false,true,false,false,{progress});await flush();assert.deepEqual(opened,[]);
+});
+
 test('saved film height survives native fullscreen without enabling disabled captions',async()=>{
   const h=harness(200,false,true,false,false,{subtitleHeight:12});await flush();
   const video=h.$('hosted-player'),captions=video.textTracks[0],cue={};captions.cues=[cue];

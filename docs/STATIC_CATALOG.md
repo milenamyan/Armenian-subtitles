@@ -53,6 +53,8 @@ update `catalog-site/catalog.json` and its public cover images:
 - Renaming changes its title; saving a cover copies the new image into
   `catalog-site/assets/posters/` with a versioned filename.
 - The **ՆՈՐ պիտակ** checkbox immediately saves each film's `is_new` flag.
+  Newly added films start checked; previously saved films keep their setting.
+  A viewer's browser hides the badge for films that viewer has already opened.
   Checked films display a purple **ՆՈՐ** badge on their poster; unchecking removes
   it. The live static website receives the change with the next catalog deploy.
 - Each film's owner-only **Ենթագրերի բարձրություն** controls move the captions

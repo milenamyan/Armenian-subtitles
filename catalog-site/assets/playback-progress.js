@@ -2,6 +2,16 @@
 (() => {
   'use strict';
   const prefix='haysub:progress:v1:';
+  const openedIds=new Set();
+  function markOpened(id){
+    if(!id)return;
+    openedIds.add(id);
+    try{localStorage.setItem(prefix+'opened:'+id,'1');}catch{}
+  }
+  function hasOpened(id){
+    if(openedIds.has(id))return true;
+    try{return localStorage.getItem(prefix+'opened:'+id)==='1';}catch{return false;}
+  }
   function read(id,duration){
     try{
       const entry=JSON.parse(localStorage.getItem(prefix+id));
@@ -40,5 +50,5 @@
     });
     probes.set(id,probe);probe.then(()=>probes.delete(id));return probe;
   }
-  globalThis.HaySubProgress={read,save,clear,rememberDuration,duration,loadDuration};
+  globalThis.HaySubProgress={read,save,clear,rememberDuration,duration,loadDuration,markOpened,hasOpened};
 })();

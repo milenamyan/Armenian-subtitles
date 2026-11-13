@@ -164,7 +164,8 @@ def test_new_badge_toggle_persists_and_exports_without_affecting_other_films(syn
     first = add(client).json()['id']
     second = add(client, 'https://media.example.org/second.mp4').json()['id']
     path = '/api/owner/media/' + first
-    assert client.get(path).json()['is_new'] is False
+    assert client.get(path).json()['is_new'] is True
+    assert client.patch('/api/owner/media/' + second, json={'is_new': False}).status_code == 200
     for enabled in (True, False):
         response = client.patch(path, json={'is_new': enabled})
         assert response.status_code == 200

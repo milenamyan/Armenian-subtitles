@@ -175,6 +175,7 @@
       const response=await fetch(endpoint,{cache:'no-store',referrerPolicy:'no-referrer'});
       if(!response.ok){if(response.status===401)throw Error('Մասնավոր նախադիտման համար մուտք գործիր /admin էջում։');if(response.status===404)throw Error('Տեսանյութը հասանելի չէ կամ հրապարակված չէ։');throw Error('Նվագարկիչն այժմ հասանելի չէ։ Փորձիր կրկին։');}
       const access=await response.json();if(token!==operation)return;
+      if(!ownerPlayback)progress?.markOpened?.(endpoint.split('/').at(-2));
       const subtitleUrl=cloudTrack?access.cloud_subtitle_url:access.subtitle_url;
       const captions=await prepareCaptions(subtitleUrl,!!(subtitleUrl&&(access.source_type==='cloud'||cloudTrack&&/\.srt(?:$|[?#])/i.test(subtitleUrl))),access.subtitle_offset||0);
       if(token!==operation){if(captions.blob)URL.revokeObjectURL(captions.blob);return;}

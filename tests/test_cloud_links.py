@@ -31,7 +31,7 @@ def test_links_persist_and_public_title_opens_the_saved_video_without_copying_fi
         assert item['source_type']=='cloud' and item['published'] and item['has_subtitles']
         assert item['state']=='ready'
         listed=client.get('/api/public/videos').json()
-        assert listed==[{'id':item['id'],'title':'My film','watch_url':'/watch/'+item['id'],'has_subtitles':True,'duration':None,'is_new':False,'poster_url':None,'published_at':listed[0]['published_at']}]
+        assert listed==[{'id':item['id'],'title':'My film','watch_url':'/watch/'+item['id'],'has_subtitles':True,'duration':None,'is_new':True,'poster_url':None,'published_at':listed[0]['published_at']}]
         access=client.get('/api/public/hosted/'+item['id']+'/playback').json()
         assert access['video_url']==VIDEO and access['subtitle_url']==SUBTITLES
         assert access['source_type']=='cloud'
@@ -68,6 +68,24 @@ def test_saving_the_same_video_updates_its_title_and_links_without_duplicate_ent
         assert before['id']==after['id'] and len(client.get('/api/owner/media').json())==1
         assert client.get('/api/public/videos').json()[0]['title']=='Renamed movie'
         assert client.get('/api/public/hosted/'+after['id']+'/playback').json()['subtitle_url']=='https://cdn.example/new.vtt'
+
+
+def test_new_cloud_films_get_badge_but_resaving_an_existing_film_keeps_owner_choice():
+    with TestClient(main.app) as client:
+        item=add(client)
+        assert item['is_new'] is True
+        assert client.patch('/api/owner/media/'+item['id'],json={'is_new':False}).status_code==200
+        assert add(client,title='Renamed')['is_new'] is False
+
+
+def test_managed_video_badge_defaults_apply_only_to_new_rows():
+    import time
+    identity='d'*32
+    db.create(dict(id=identity,title='New upload',size=1,fingerprint='fixture',backend='local',
+                   object_key='videos/new.mp4',part_size=1,state='ready',created=time.time(),updated=time.time()))
+    assert db.get(identity)['is_new']==1
+    db.update(identity,is_new=0)
+    assert db.get(identity)['is_new']==0
 
 
 def test_cloud_duration_is_saved_for_first_time_visitors_and_retained_on_rename():
