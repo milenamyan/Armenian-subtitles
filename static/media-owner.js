@@ -34,7 +34,6 @@
   function apply(row,item){
     if(Number(item.updated)<Number(row.item.updated))return;
     row.item=item;row.title.textContent=item.title;
-    if(!row.newSaving)row.newCheckbox.checked=!!item.is_new;
     row.syncHeight?.();
     if(!row.posterDirty){
       row.posterPreview.hidden=!item.poster_url;
@@ -182,21 +181,6 @@
       }catch(error){note(error.message);}finally{row.attaching=false;subtitleControls(row);}
     });
     actions.append(preview,publish,resume,retry,remove,rename);
-    const newToggle=element('label',undefined,'owner-new-toggle'),newCheckbox=element('input'),newStatus=element('span','','owner-new-status');
-    newCheckbox.type='checkbox';newCheckbox.checked=!!item.is_new;
-    newCheckbox.setAttribute('aria-label','«ՆՈՐ» պիտակ՝ '+item.title);
-    newStatus.setAttribute('role','status');newStatus.setAttribute('aria-live','polite');
-    newToggle.append(newCheckbox,element('span','ՆՈՐ պիտակ'));actions.append(newToggle,newStatus);
-    newCheckbox.addEventListener('change',async()=>{
-      const row=rows.get(item.id);if(row.newSaving)return;
-      const enabled=newCheckbox.checked;row.newSaving=true;newCheckbox.disabled=true;newStatus.textContent='Պահպանվում է…';
-      try{
-        const saved=await api('/api/owner/media/'+item.id,{method:'PATCH',body:{is_new:enabled}});
-        if(saved.is_new!==enabled)throw Error('Պիտակը չի պահպանվել։ Վերագործարկիր HaySub-ը և կրկին փորձիր։');
-        apply(row,saved);newStatus.textContent='Պահպանված է ✓';
-      }catch(error){newStatus.textContent=error.message;}
-      finally{row.newSaving=false;newCheckbox.disabled=false;newCheckbox.checked=!!row.item.is_new;}
-    });
     const headerBody=element('div',undefined,'hosted-video-header-body');
     headerBody.append(heading,state,actions);
     header.append(headerBody,posterForm);
@@ -233,7 +217,7 @@
       if(!heightSaving&&draftHeight===savedHeight){draftHeight=next;heightValue.textContent=next+'%';}
       savedHeight=next;heightSave.disabled=heightSaving||draftHeight===next;
     }
-    const row={root,title,state,error,preview,publish,share,resume,retry,remove,form,rename,subtitleForm,subtitleSelect,attach,attaching:false,posterPreview,posterSave,posterStatus,posterDirty:false,item,syncHeight,heightEditor,newCheckbox,newSaving:false};rows.set(item.id,row);subtitleChoices(row);apply(row,item);
+    const row={root,title,state,error,preview,publish,share,resume,retry,remove,form,rename,subtitleForm,subtitleSelect,attach,attaching:false,posterPreview,posterSave,posterStatus,posterDirty:false,item,syncHeight,heightEditor};rows.set(item.id,row);subtitleChoices(row);apply(row,item);
   }
   async function refresh(){
     if(refreshing)return;refreshing=true;

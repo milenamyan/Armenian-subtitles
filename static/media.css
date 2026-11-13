@@ -52,4 +52,5 @@
 #hosted-completed-videos .hosted-poster-form button{min-height:26px;padding:4px 8px;font-size:10px}
 @media(max-width:480px){#hosted-completed-videos .hosted-poster-form{margin-left:0}}
 
-.owner-new-toggle{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:5px 9px;border:1px solid #655278;border-radius:7px;color:var(--accent);font-size:11px;cursor:pointer}.owner-new-toggle input[type=checkbox]{width:16px;height:16px;margin:0;accent-color:var(--accent);cursor:pointer}.owner-new-status{font-size:11px;color:var(--muted)}
+
+.owner-analytics-link{margin-left:auto;flex-shrink:0;color:var(--accent);font-size:11px;text-decoration:none;padding:8px 10px;border:1px solid var(--line);border-radius:7px}.owner-analytics-link:hover{background:var(--panel)}

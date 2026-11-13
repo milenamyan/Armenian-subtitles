@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="hy">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>HaySub — Այցելություններ</title><link rel="icon" href="/static/site-planet.png"><link rel="stylesheet" href="/static/style.css"><link rel="stylesheet" href="/static/analytics.css"></head>
+<body><header><a class="brand" href="/">հ<span>HaySub</span></a><a class="analytics-back" href="/admin">← Ադմինի էջ</a></header>
+<main class="analytics-page">
+<div class="analytics-heading"><div><p class="analytics-eyebrow">ՏԵՂԱՅԻՆ ԿԱՅՔ</p><h1>Այցելություններ</h1><p class="hint">Որ սարքերից են այցելում և որքան ժամանակ են մնում։</p></div>
+<div class="analytics-filters"><label for="analytics-period">Ժամանակահատված<select id="analytics-period"><option value="1">Վերջին 24 ժամը</option><option value="7" selected>Վերջին 7 օրը</option><option value="30">Վերջին 30 օրը</option><option value="90">Վերջին 90 օրը</option></select></label><button type="button" class="secondary" id="analytics-refresh">Թարմացնել ↻</button></div></div>
+<p id="analytics-status" class="hint" role="status" aria-live="polite">Բեռնվում է…</p>
+<div class="analytics-metrics"><article><span>Այցելություններ</span><strong id="metric-visits">—</strong></article><article><span>Ընդհանուր ակտիվ ժամանակ</span><strong id="metric-time">—</strong></article><article><span>Միջին տևողություն</span><strong id="metric-average">—</strong></article><article><span>Վերջին 45 վայրկյանում</span><strong id="metric-recent">—</strong></article></div>
+<section class="analytics-devices" aria-label="Սարքերի բաշխում" id="analytics-devices"></section>
+<section class="analytics-table-panel"><h2>Այցելությունների ցանկ</h2><p class="hint">Ընտրված ժամանակահատվածի վերջին 200 այցելությունները։ Ժամերը՝ UTC+4։</p><div class="analytics-table-scroll"><table><thead><tr><th scope="col">Սարք</th><th scope="col">Դիտարկիչ / համակարգ</th><th scope="col">Մուտքի ժամ</th><th scope="col">Վերջին ազդանշան</th><th scope="col">Ակտիվ տևողություն</th></tr></thead><tbody id="analytics-visits"></tbody></table></div></section>
+<p class="analytics-note">Տևողությունը մոտավոր է․ հաշվվում է միայն տեսանելի ներդիրում անցկացրած ժամանակը և ուղարկվում մոտ 15 վայրկյանը մեկ։ Նույն ներդիրում կատալոգից ֆիլմ անցնելը մեկ այցելություն է։ 30 րոպե դադարից հետո սկսվում է նոր այցելություն։ Սա մարդկանց եզակի քանակ չէ։</p>
+<p class="analytics-note">IP հասցեներ, անուններ և սարքի եզակի նույնացուցիչներ չեն պահվում։ Սարքի և դիտարկիչի տեսակը մոտավոր է։ Տվյալները պահվում են տեղային բազայում մինչև 90 օր։ Ադմինի էջը և մասնավոր նախադիտումները չեն հաշվվում։ Դիտարկիչի «Do Not Track» կարգավորումը հարգվում է։</p>
+</main><script src="/static/analytics.js"></script></body></html>

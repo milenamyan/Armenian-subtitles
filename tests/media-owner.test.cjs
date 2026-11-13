@@ -59,19 +59,6 @@ test('position save errors appear beside the button and leave the draft availabl
   assert.equal(editor.children[3].textContent,'12%');assert.equal(h.data[0].subtitle_height,undefined);
 });
 
-test('New checkbox saves on and off immediately and restores its saved state after failure',async()=>{
-  const h=harness();await flush();
-  const actions=h.$('hosted-completed-videos').children[0].children[0].children[0].children[2];
-  const checkbox=actions.children[6].children[0],status=actions.children[7];
-  assert.equal(checkbox.checked,false);
-  for(const enabled of [true,false]){
-    checkbox.checked=enabled;await checkbox.fire('change');
-    assert.equal(h.data[0].is_new,enabled);assert.equal(checkbox.checked,enabled);assert.match(status.textContent,/Պահպանված/);
-  }
-  h.fail();checkbox.checked=true;await checkbox.fire('change');
-  assert.equal(checkbox.checked,false);assert.equal(checkbox.disabled,false);assert.match(status.textContent,/could not be saved/);
-});
-
 test('position controls stay hidden until Private preview and hide again when it closes',async()=>{
   const h=harness();await flush();h.data[0].published=true;await h.$('hosted-refresh').fire('click');
   const card=h.$('hosted-completed-videos').children[0],editor=card.children[5],body=card.children[0].children[0],actions=body.children[2];
