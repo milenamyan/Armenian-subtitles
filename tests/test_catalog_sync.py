@@ -143,11 +143,15 @@ def test_saved_height_is_per_film_persistent_and_exported_to_public_playback(syn
     path = '/api/owner/media/' + first
     assert client.patch(path, json={'subtitle_height': 18}).json()['subtitle_height'] == 18
     assert media_db.get(first)['subtitle_height'] == 18
-    assert media_db.get(second)['subtitle_height'] == 0
+    assert media_db.get(second)['subtitle_height'] == 10
     exported = {film['id']: film for film in films(site)}
     assert exported[first]['subtitle_height'] == 18
-    assert exported[second]['subtitle_height'] == 0
+    assert exported[second]['subtitle_height'] == 10
+    assert client.patch('/api/owner/media/' + second, json={'subtitle_height': 0}).json()['subtitle_height'] == 0
+    assert {film['id']: film for film in films(site)}[second]['subtitle_height'] == 0
     assert client.get('/api/public/hosted/' + first + '/playback').json()['subtitle_height'] == 18
+    assert 'id="watch-height-save"' in client.get('/preview/' + first).text
+    assert 'id="watch-height-save"' not in client.get('/watch/' + first).text
     for invalid in (-1, 41, 2.5, True):
         assert client.patch(path, json={'subtitle_height': invalid}).status_code == 422
     assert media_db.get(first)['subtitle_height'] == 18

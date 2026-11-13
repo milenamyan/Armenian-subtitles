@@ -7,7 +7,7 @@
   function subtitles(){
     if(track.track){
       track.track.mode=captionsEnabled?'showing':'disabled';
-      const height=item?.subtitle_height||0;
+      const height=item?.subtitle_height??10;
       for(const cue of track.track.cues||[]){cue.snapToLines=height===0;cue.line=height===0?-1:100-height;cue.lineAlign='end';}
     }
   }

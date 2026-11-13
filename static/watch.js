@@ -19,7 +19,35 @@
   let statusError=false;
   function message(text,error=false){statusError=error;status.textContent=text;status.hidden=!text;status.classList.toggle('error',error);}
   function validHeight(value){const number=Number(value);return value!=null&&Number.isFinite(number)?Math.max(0,Math.min(40,number)):10;}
-  let height=0;
+  let height=10;
+  let draftHeight=null,savedHeight=10,heightSaving=false;
+  const heightEditor=preview&&$('watch-height-editor')?.getAttribute('data-position-editor')==='true';
+  function updateHeightEditor(){
+    if(!heightEditor)return;
+    $('watch-height-value').textContent=height+'%';
+    $('watch-height-save').disabled=heightSaving||height===savedHeight;
+  }
+  if(heightEditor){
+    const move=amount=>{
+      if(heightSaving)return;
+      height=Math.max(0,Math.min(40,height+amount));draftHeight=height;
+      positionSubtitles();updateHeightEditor();$('watch-height-status').textContent=height===savedHeight?'':'Չպահպանված փոփոխություն';
+    };
+    $('watch-height-up').addEventListener('click',()=>move(2));
+    $('watch-height-down').addEventListener('click',()=>move(-2));
+    $('watch-height-save').addEventListener('click',async()=>{
+      if(heightSaving||height===savedHeight)return;
+      heightSaving=true;updateHeightEditor();$('watch-height-status').textContent='Պահպանվում է…';
+      try{
+        const response=await fetch('/api/owner/media/'+identity,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({subtitle_height:height})});
+        const result=await response.json();
+        if(!response.ok)throw Error(typeof result.detail==='string'?result.detail:'Չհաջողվեց պահպանել դիրքը։');
+        if(result.subtitle_height!==height)throw Error('Դիրքը չի պահպանվել։ Թարմացրու տեղային սերվերը և կրկին փորձիր։');
+        savedHeight=height;draftHeight=null;$('watch-height-status').textContent='Պահպանված է ✓';
+      }catch(error){$('watch-height-status').textContent=error.message;}
+      finally{heightSaving=false;updateHeightEditor();}
+    });
+  }
   let nativeFullscreen=false;
   function positionSubtitles(){
     for(const item of video.textTracks){
@@ -152,7 +180,7 @@
       if(token!==operation){if(captions.blob)URL.revokeObjectURL(captions.blob);return;}
       $('watch-title').textContent=access.title;document.title=access.title+' · HaySub';
       if($('watch-visibility'))$('watch-visibility').textContent=ownerPlayback?'Մասնավոր նախադիտում․ միայն սեփականատիրոջ համար։':access.visibility==='public'?'': 'Այս տեսանյութը ցանկում հրապարակված չէ․ հղումն ունեցող ցանկացած անձ կարող է դիտել։ Սա գաղտնաբառով պաշտպանություն չէ։';
-      height=validHeight(access.subtitle_height??0);
+      savedHeight=validHeight(access.subtitle_height??10);height=draftHeight??savedHeight;updateHeightEditor();
       loadMedia(cloudVideo?access.cloud_video_url:access.video_url,captions,position,speed,wasPlaying||playSelection,token);
       playSelection=false;
       timer=setTimeout(()=>connect(true),Math.max(1000,(access.expires_in-30)*1000));
@@ -205,7 +233,7 @@
   window.addEventListener('haysub-subtitle-height',event=>{
     const detail=event.detail;
     if(!detail||!ownerPlayback||!endpoint.endsWith('/'+detail.id+'/playback'))return;
-    height=validHeight(detail.height);positionSubtitles();
+    height=validHeight(detail.height);draftHeight=height;positionSubtitles();
   });
   window.addEventListener('haysub-play-video',event=>{
     const selected=event.detail;
@@ -213,6 +241,7 @@
     saveProgress();video.pause();video.hidden=true;if($('watch-controls'))$('watch-controls').hidden=true;playerHidden=true;
     ++operation;clearTimeout(timer);timer=null;loading=false;direct=null;saveControls();
     ownerPlayback=!!selected.owner&&video.getAttribute('data-owner-controls')!=='false';
+    draftHeight=ownerPlayback&&selected.subtitleHeight!=null?validHeight(selected.subtitleHeight):null;
     endpoint=(ownerPlayback?'/api/owner/media/':'/api/public/hosted/')+selected.id+'/playback';
     playSelection=true;
     const panel=$('cloud-url-player');

@@ -34,7 +34,7 @@ def validate(data):
         if not isinstance(identity, str) or not re.fullmatch(r'[a-zA-Z0-9_-]{1,100}', identity) or identity in ids:
             raise ValueError('Each film needs a unique id containing letters, numbers, underscores or hyphens.')
         ids.add(identity)
-        height = item.get('subtitle_height', 0)
+        height = item.get('subtitle_height', 10)
         if isinstance(height, bool) or not isinstance(height, int) or not 0 <= height <= 40:
             raise ValueError('subtitle_height must be an integer between 0 and 40.')
         if 'published' in item and not isinstance(item['published'], bool):
@@ -97,7 +97,7 @@ def export_library(database, config, destination, *, strict=True):
                         'video_url': external or cloud(row['object_key']),
                         'subtitle_url': row.get('external_subtitle_url') or cloud(row.get('subtitle_key')),
                         'subtitle_offset': row.get('subtitle_offset') or 0,
-                        'subtitle_height': row.get('subtitle_height') or 0}
+                        'subtitle_height': row.get('subtitle_height', 10)}
                 validate({'version': 1, 'films': [film]})
             except ValueError:
                 if strict:

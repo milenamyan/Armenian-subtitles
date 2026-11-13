@@ -51,7 +51,8 @@ update `catalog-site/catalog.json` and its public cover images:
   `catalog-site/assets/posters/` with a versioned filename.
 - Each film's owner-only **Ենթագրերի բարձրություն** controls move the captions
   up/down in its open owner preview. Click **Պահել դիրքը** to save that film's
-  height. It persists in SQLite and exports as `subtitle_height` (0–40 percent
+  height. New videos default to 10%; existing saved positions are preserved.
+  It persists in SQLite and exports as `subtitle_height` (0–40 percent
   above the bottom; 0 uses browser placement). Viewers have no height controls.
   The published site uses this value after the changed `catalog-site` files
   are committed and deployed. Device-native players may apply their own

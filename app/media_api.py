@@ -163,7 +163,7 @@ def save_cloud_video(body:CloudVideo):
             connection.execute("UPDATE hosted_videos SET title=?,external_subtitle_url=?,subtitle_key=NULL,subtitle_cues='[]',subtitle_offset=0,published_at=CASE WHEN published=0 THEN ? ELSE published_at END,published=1,updated=? WHERE id=?",(title,subtitles,now,now,identity))
         else:
             identity=uuid4().hex
-            connection.execute("INSERT INTO hosted_videos(id,title,size,fingerprint,backend,object_key,part_size,state,published,external_video_url,external_subtitle_url,created,updated) VALUES (?,?,0,?,'external',?,1,'ready',1,?,?,?,?)",
+            connection.execute("INSERT INTO hosted_videos(id,title,size,fingerprint,backend,object_key,part_size,state,published,external_video_url,external_subtitle_url,created,updated,subtitle_height) VALUES (?,?,0,?,'external',?,1,'ready',1,?,?,?,?,10)",
                                (identity,title,hashlib.sha256(video.encode()).hexdigest(),'external/'+identity,video,subtitles,now,now))
     db.update(identity,list_restored=1)
     if body.duration is not None:db.update(identity,duration=body.duration)
@@ -508,7 +508,7 @@ def watch_page(item,owner=False):
     template=(STATIC/'watch.html').read_text(encoding='utf-8')
     if owner:
         template=template.replace('<video id="hosted-player"',(STATIC/'owner-watch-tools.html').read_text(encoding='utf-8')+'<video id="hosted-player"')
-        template=template.replace('</video>','</video>'+(STATIC/'owner-watch-controls.html').read_text(encoding='utf-8'))
+        template=template.replace('</video>','</video>'+(STATIC/'owner-subtitle-position.html').read_text(encoding='utf-8')+(STATIC/'owner-watch-controls.html').read_text(encoding='utf-8'))
     # Unavailable/unpublished pages keep their normal client-side error handling.
     if item and (owner or item['published']) and item['state']=='ready':
         try:access=playback(item,owner=owner)

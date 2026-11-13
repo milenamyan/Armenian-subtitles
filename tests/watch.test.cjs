@@ -19,6 +19,23 @@ test('only the active owner preview accepts unsaved height adjustments, and each
   viewer.handlers.get('haysub-subtitle-height')({detail:{id:'a'.repeat(32),height:30}});assert.equal(replacement.line,86);
 });
 
+test('standalone owner preview saves subtitle height with visible confirmation and retains failed drafts',async()=>{
+  let saved=12,fail=false;
+  const h=harness(200,true,false,false,false,{heightEditor:true,fetch:async(url,options)=>{
+    if(options?.method==='PATCH'){
+      if(fail)return {ok:false,json:async()=>({detail:'Save failed'})};
+      saved=JSON.parse(options.body).subtitle_height;return {ok:true,json:async()=>({subtitle_height:saved})};
+    }
+    return {ok:true,json:async()=>({video_url:'https://cdn.test/movie.mp4',subtitle_height:saved,expires_in:14400})};
+  }});await flush();
+  assert.equal(h.$('watch-height-value').textContent,'12%');
+  await h.$('watch-height-up').fire('click');await h.$('watch-height-save').fire('click');
+  assert.equal(saved,14);assert.match(h.$('watch-height-status').textContent,/Պահպանված/);assert.equal(h.$('watch-height-save').disabled,true);
+  fail=true;await h.$('watch-height-down').fire('click');await h.$('watch-height-save').fire('click');
+  assert.equal(saved,14);assert.equal(h.$('watch-height-value').textContent,'12%');assert.equal(h.$('watch-height-save').disabled,false);
+  assert.equal(h.$('watch-height-status').textContent,'Save failed');
+});
+
 test('startup media errors stay in loading state; errors from the assigned media still surface',async()=>{
   let respond;
   const h=harness(200,false,true,false,false,{fetch:()=>new Promise(resolve=>{respond=resolve;})});
@@ -38,6 +55,7 @@ function harness(status=200,preview=false,hasSubtitles=true,cloud=false,inline=f
   const nodes=new Map(),timers=[],calls=[],blobs=[],events=[],handlers=new Map();
   const $=id=>{if(overrides.minimal&&['watch-controls','watch-speed','watch-subtitles','watch-fullscreen','watch-retry','watch-restart','watch-visibility'].includes(id))return null;if(overrides.readOnly&&['watch-url-form','watch-save-form'].includes(id))return null;if(!nodes.has(id))nodes.set(id,{attributes:{'data-media-source':cloud?'cloud':'local','data-url-player':(inline||overrides.inline)?'true':null,'data-owner-controls':overrides.readOnly?'false':null},getAttribute(name){return this.attributes[name]||null;},parentElement:null,children:[],get nextSibling(){if(!this.parentElement)return null;return this.parentElement.children[this.parentElement.children.indexOf(this)+1]||null;},remove(){if(this.parentElement)this.parentElement.children=this.parentElement.children.filter(child=>child!==this);this.parentElement=null;},append(...children){for(const child of children){child.remove();child.parentElement=this;this.children.push(child);}},prepend(child){child.remove();child.parentElement=this;this.children.unshift(child);},insertBefore(child,before){if(child===before)return;child.remove();child.parentElement=this;const index=this.children.indexOf(before);if(index<0)this.children.push(child);else this.children.splice(index,0,child);},after(child){this.parentElement?.insertBefore(child,this.nextSibling);},hidden:true,textContent:'',value:id==='watch-speed'?'1':'hy',currentTime:0,paused:true,playbackRate:1,duration:60,textTracks:[{mode:'disabled'}],listeners:new Map(),classList:{toggle(){}},addEventListener(name,fn,options){const list=this.listeners.get(name)||[];list.push({fn,once:options?.once});this.listeners.set(name,list);},async fire(name){const list=this.listeners.get(name)||[];this.listeners.set(name,list.filter(v=>!v.once));for(const item of list)await item.fn({preventDefault(){}});},removeAttribute(name){delete this[name];},load(){},scrollIntoView(){this.scrolled=true;},pause(){this.paused=true;},async play(){this.paused=false;},async requestFullscreen(){this.fullscreen=true;}});return nodes.get(id);};
   if(inline||overrides.inline)$('cloud-url-player').append($('watch-status'),$('watch-player-stage'));
+  if(overrides.heightEditor)$('watch-height-editor').attributes['data-position-editor']='true';
   vm.runInNewContext(fs.readFileSync('static/watch.js','utf8'),{Date:overrides.Date||Date,localStorage:overrides.storage,HaySubProgress:overrides.progress,document:{getElementById:$,title:''},location:{origin:'http://127.0.0.1:8000',pathname:(inline||overrides.inline)?'/':(preview?'/preview/':'/watch/')+'a'.repeat(32)},window:{addEventListener:(name,fn)=>handlers.set(name,fn),dispatchEvent:event=>{events.push(event.type);handlers.get(event.type)?.(event);}},CustomEvent:class{constructor(type){this.type=type;}},HaySubMediaSources:require('../static/media-sources.js'),Blob,URL:class extends URL{static createObjectURL(blob){blobs.push(blob);return 'blob:captions';}static revokeObjectURL(){}},setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout(){},fetch:async(url,options)=>{calls.push([url,options]);if(overrides.fetch)return overrides.fetch(url,options);if(url==='/api/owner/media/cloud')return {ok:true,json:async()=>({id:'saved',title:JSON.parse(options.body).title,published:true,share_url:'/watch/saved'})};if(url==='https://cdn.test/captions.vtt')return {ok:true,text:async()=> 'WEBVTT\n\n00:00:01.000 --> 00:00:03.000\nHello'};if(url==='https://cloud.test/data/subtitles/Film/armenian.srt')return {ok:true,text:async()=> '1\n00:00:01,000 --> 00:00:03,000\nHello'};return {ok:status===200,status,json:async()=>({title:'<script>Film</script>',video_url:'https://private.test/video?signature=one',subtitle_url:hasSubtitles?'https://private.test/subtitles?signature=two':null,cloud_video_url:'https://cloud.test/data/videos/Film.mp4',cloud_subtitle_url:hasSubtitles?'https://cloud.test/data/subtitles/Film/armenian.srt':null,subtitle_offset:2,subtitle_height:overrides.subtitleHeight??0,expires_in:14400})};}});
   return {$,calls,timers,blobs,events,handlers};
 }

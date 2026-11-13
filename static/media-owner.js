@@ -34,6 +34,7 @@
   function apply(row,item){
     if(Number(item.updated)<Number(row.item.updated))return;
     row.item=item;row.title.textContent=item.title;
+    row.syncHeight?.();
     if(!row.posterDirty){
       row.posterPreview.hidden=!item.poster_url;
       if(item.poster_url)row.posterPreview.src=item.poster_url+'?v='+encodeURIComponent(item.updated);
@@ -120,13 +121,14 @@
       catch(error){posterSave.textContent='Կրկին պահպանել';posterNote(error.message,true);}finally{posterInput.disabled=false;posterSave.disabled=!editedPoster;}
     });
 
-    function openInline(event){
+    function openInline(event,editPosition=false){
       if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
       if(!$('cloud-url-player'))return;
       event.preventDefault();
       const current=rows.get(item.id)?.item;
       if(!current?.can_preview){note('This video is not ready to play yet.');return;}
-      window.dispatchEvent(new CustomEvent('haysub-play-video',{detail:{id:current.id,owner:true,anchor:heading}}));
+      headerBody.append(heightEditor);
+      window.dispatchEvent(new CustomEvent('haysub-play-video',{detail:{id:current.id,owner:true,anchor:heading,subtitleHeight:draftHeight,editPosition}}));
     }
     title.addEventListener('click',openInline);
     state.setAttribute('role','status');state.setAttribute('aria-live','polite');
@@ -148,7 +150,7 @@
       }catch(error){note(error.message);}finally{save.disabled=false;cancel.disabled=false;}
     });
     const resume=button('Շարունակել վերբեռնումը',async()=>{selected=item.id;$('hosted-title').value=rows.get(item.id).item.title;note('Վերևում ընտրիր նույն սկզբնական տեսանյութը, ապա սեղմիր «Շարունակել ընտրված վերբեռնումը»։');$('hosted-upload-submit').textContent='Շարունակել ընտրված վերբեռնումը';$('hosted-file').focus();});
-    const preview=element('a','Մասնավոր նախադիտում','secondary');preview.href=item.preview_url;preview.addEventListener('click',openInline);
+    const preview=element('a','Մասնավոր նախադիտում','secondary');preview.href=item.preview_url;preview.addEventListener('click',event=>openInline(event,true));
     const publish=button('Հրապարակել',async()=>{const current=rows.get(item.id).item;await api('/api/owner/media/'+item.id,{method:'PATCH',body:{published:!current.published}});await refresh();});
     const retry=button('Կրկնել մշակումը / մաքրումը',async()=>{await api('/api/owner/media/'+item.id+'/retry',{method:'POST'});await refresh();});
     const remove=button('Ջնջել տեսանյութը',async()=>{
@@ -182,27 +184,40 @@
     const headerBody=element('div',undefined,'hosted-video-header-body');
     headerBody.append(heading,state,actions);
     header.append(headerBody,posterForm);
-    const heightEditor=element('div',undefined,'owner-subtitle-height'),heightLabel=element('span','Ենթագրերի բարձրություն'),heightValue=element('output',String(item.subtitle_height||0)+'%');
-    let draftHeight=item.subtitle_height||0,heightSaving=false;
+    const heightEditor=element('div',undefined,'owner-subtitle-height'),heightLabel=element('span','Ենթագրերի բարձրություն'),heightValue=element('output',String(item.subtitle_height??10)+'%');
+    heightEditor.hidden=true;
+    let draftHeight=item.subtitle_height??10,heightSaving=false;
     const heightSave=element('button','Պահել դիրքը','secondary');heightSave.type='button';
+    const heightStatus=element('span','','subtitle-height-status');heightStatus.setAttribute('role','status');heightStatus.setAttribute('aria-live','polite');
+    function heightNote(text,error=false){heightStatus.textContent=text;heightStatus.classList.toggle('error',error);}
     heightSave.addEventListener('click',async()=>{
       if(heightSaving)return;heightSaving=true;heightSave.disabled=true;
+      heightSave.textContent='Պահպանվում է…';heightNote('Պահպանվում է…');
       try{
         const saved=await api('/api/owner/media/'+item.id,{method:'PATCH',body:{subtitle_height:draftHeight}});
-        apply(rows.get(item.id),saved);heightSave.disabled=true;note('Ենթագրերի դիրքը պահպանված է այս ֆիլմի համար։');
-      }catch(error){note(error.message);}finally{heightSaving=false;heightSave.disabled=draftHeight===(rows.get(item.id)?.item.subtitle_height||0);}
+        if(saved.subtitle_height!==draftHeight)throw Error('Դիրքը չի պահպանվել։ Թարմացրու տեղային սերվերը և կրկին փորձիր։');
+        apply(rows.get(item.id),saved);heightSave.disabled=true;heightNote('Պահպանված է ✓');
+        window.dispatchEvent(new CustomEvent('haysub-subtitle-height',{detail:{id:item.id,height:draftHeight}}));
+      }catch(error){heightNote(error.message,true);}finally{heightSaving=false;heightSave.textContent='Պահել դիրքը';heightSave.disabled=draftHeight===(rows.get(item.id)?.item.subtitle_height??10);}
     });
     function moveHeight(amount){
       if(heightSaving)return;
       draftHeight=Math.max(0,Math.min(40,draftHeight+amount));heightValue.textContent=draftHeight+'%';
-      heightSave.disabled=draftHeight===(rows.get(item.id)?.item.subtitle_height||0);
+      heightSave.disabled=draftHeight===(rows.get(item.id)?.item.subtitle_height??10);
+      heightNote(heightSave.disabled?'':'Չպահպանված փոփոխություն');
       window.dispatchEvent(new CustomEvent('haysub-subtitle-height',{detail:{id:item.id,height:draftHeight}}));
     }
     const heightUp=button('↑ Վերև',()=>moveHeight(2)),heightDown=button('↓ Ներքև',()=>moveHeight(-2));
     heightSave.disabled=true;heightValue.setAttribute('aria-live','polite');
-    heightEditor.append(heightLabel,heightUp,heightDown,heightValue,heightSave);
+    heightEditor.append(heightLabel,heightUp,heightDown,heightValue,heightSave,heightStatus);
     root.append(header,error,form,share,subtitleForm,heightEditor);$('hosted-videos').append(root);
-    const row={root,title,state,error,preview,publish,share,resume,retry,remove,form,rename,subtitleForm,subtitleSelect,attach,attaching:false,posterPreview,posterSave,posterStatus,posterDirty:false,item};rows.set(item.id,row);subtitleChoices(row);apply(row,item);
+    let savedHeight=item.subtitle_height??10;
+    function syncHeight(){
+      const next=rows.get(item.id)?.item.subtitle_height??10;
+      if(!heightSaving&&draftHeight===savedHeight){draftHeight=next;heightValue.textContent=next+'%';}
+      savedHeight=next;heightSave.disabled=heightSaving||draftHeight===next;
+    }
+    const row={root,title,state,error,preview,publish,share,resume,retry,remove,form,rename,subtitleForm,subtitleSelect,attach,attaching:false,posterPreview,posterSave,posterStatus,posterDirty:false,item,syncHeight,heightEditor};rows.set(item.id,row);subtitleChoices(row);apply(row,item);
   }
   async function refresh(){
     if(refreshing)return;refreshing=true;
@@ -246,6 +261,14 @@
     }catch(error){note(error.message);}
     setInterval(()=>{if(!document.hidden)void refresh();},5000);
   }
+  function hidePositionControls(){for(const row of rows.values())row.heightEditor.hidden=true;}
+  window.addEventListener('haysub-play-video',event=>{
+    hidePositionControls();
+    const detail=event.detail,row=rows.get(detail?.id);
+    if(row&&detail.owner&&detail.editPosition)row.heightEditor.hidden=false;
+  });
+  window.addEventListener('haysub-close-video',hidePositionControls);
+  $('watch-close')?.addEventListener('click',hidePositionControls);
   window.addEventListener('haysub-library-updated',refreshLibrary);
   window.addEventListener('haysub-media-updated',event=>{
     const item=event.detail?.item;

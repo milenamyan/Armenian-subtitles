@@ -11,7 +11,7 @@ function harness(syncState={value:null}){
     replaceChildren(){for(const child of [...this.children])child.remove();},setAttribute(){},addEventListener(name,fn){this.listeners.set(name,fn);},async fire(name){await this.listeners.get(name)?.({preventDefault(){}});},
     reset(){this.didReset=true;$('hosted-title').value='';$('hosted-file').value='';},scrollIntoView(){this.scrolled=true;},focus(){this.focused=true;}};}
   const $=id=>{if(!nodes.has(id))nodes.set(id,node('div',id));return nodes.get(id);};
-  vm.runInNewContext(fs.readFileSync('static/media-owner.js','utf8'),{document:{getElementById:$,createElement:tag=>node(tag),hidden:false},window:{addEventListener:(name,fn)=>events.set(name,fn),dispatchEvent:event=>played.push(event),confirm:()=>true},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail;}},location:{origin:'http://localhost:8000'},FormData,AbortController,HaySubMediaUpload:{},setInterval:fn=>timers.push(fn),fetch:async(path,options)=>{
+  vm.runInNewContext(fs.readFileSync('static/media-owner.js','utf8'),{document:{getElementById:$,createElement:tag=>node(tag),hidden:false},window:{addEventListener:(name,fn)=>events.set(name,fn),dispatchEvent:event=>{played.push(event);events.get(event.type)?.(event);},confirm:()=>true},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options?.detail;}},location:{origin:'http://localhost:8000'},FormData,AbortController,HaySubMediaUpload:{},setInterval:fn=>timers.push(fn),fetch:async(path,options)=>{
     calls.push([path,options]);
     if(path.endsWith('/config'))return {ok:true,json:async()=>({configured:true,storage:'local',worker_online:true,max_bytes:100000})};
     if(path==='/api/library')return {ok:true,json:async()=>library.map(item=>({...item}))};
@@ -43,11 +43,31 @@ test('owner height controls preview changes and persist only when Save is clicke
   const h=harness();await flush();
   const card=h.$('hosted-completed-videos').children[0],editor=card.children[5];
   const [label,up,down,value,save]=editor.children;
-  assert.equal(save.disabled,true);await up.fire('click');assert.equal(value.textContent,'2%');
-  assert.equal(h.played.at(-1).type,'haysub-subtitle-height');assert.equal(h.played.at(-1).detail.height,2);
+  assert.equal(save.disabled,true);await up.fire('click');assert.equal(value.textContent,'12%');
+  assert.equal(h.played.at(-1).type,'haysub-subtitle-height');assert.equal(h.played.at(-1).detail.height,12);
   assert.equal(h.calls.some(([,options])=>options.method==='PATCH'),false);
-  await save.fire('click');assert.equal(h.data[0].subtitle_height,2);assert.equal(save.disabled,true);
-  await down.fire('click');assert.equal(value.textContent,'0%');
+  await save.fire('click');assert.equal(h.data[0].subtitle_height,12);assert.equal(save.disabled,true);
+  assert.match(editor.children[5].textContent,/Պահպանված/);
+  await down.fire('click');assert.equal(value.textContent,'10%');
+});
+
+test('position save errors appear beside the button and leave the draft available for retry',async()=>{
+  const h=harness();await flush();h.fail();
+  const editor=h.$('hosted-completed-videos').children[0].children[5];
+  await editor.children[1].fire('click');await editor.children[4].fire('click');
+  assert.match(editor.children[5].textContent,/could not be saved/);assert.equal(editor.children[4].disabled,false);
+  assert.equal(editor.children[3].textContent,'12%');assert.equal(h.data[0].subtitle_height,undefined);
+});
+
+test('position controls stay hidden until Private preview and hide again when it closes',async()=>{
+  const h=harness();await flush();h.data[0].published=true;await h.$('hosted-refresh').fire('click');
+  const card=h.$('hosted-completed-videos').children[0],editor=card.children[5],body=card.children[0].children[0],actions=body.children[2];
+  assert.equal(editor.hidden,true);await actions.children[5].fire('click');assert.equal(editor.hidden,true);
+  await editor.children[1].fire('click');await actions.children[0].fire('click');
+  assert.equal(h.played.at(-1).detail.subtitleHeight,12);assert.equal(editor.parentElement,body);assert.equal(editor.hidden,false);
+  await h.$('watch-close').fire('click');assert.equal(editor.hidden,true);
+  await actions.children[0].fire('click');assert.equal(editor.hidden,false);
+  h.events.get('haysub-play-video')({detail:{id:'b'.repeat(32),owner:true,editPosition:true}});assert.equal(editor.hidden,true);
 });
 test('saved posters appear in the header after refreshing media',async()=>{
   const h=harness();await flush();

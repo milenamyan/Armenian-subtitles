@@ -21,7 +21,7 @@ def connect():
     for name,kind in (('binned_at','REAL'),('purge_after','REAL'),('bin_previous_state','TEXT'),('bin_object_key','TEXT'),('inbox_path','TEXT'),('external_video_url','TEXT'),('external_subtitle_url','TEXT'),('published_at','REAL'),('poster','BLOB'),('poster_type','TEXT')):
         if name not in columns:db.execute('ALTER TABLE hosted_videos ADD COLUMN '+name+' '+kind)
     if 'list_restored' not in columns:db.execute('ALTER TABLE hosted_videos ADD COLUMN list_restored INTEGER NOT NULL DEFAULT 0')
-    if 'subtitle_height' not in columns:db.execute('ALTER TABLE hosted_videos ADD COLUMN subtitle_height INTEGER NOT NULL DEFAULT 0')
+    if 'subtitle_height' not in columns:db.execute('ALTER TABLE hosted_videos ADD COLUMN subtitle_height INTEGER NOT NULL DEFAULT 10')
     db.execute('UPDATE hosted_videos SET published_at=created WHERE published=1 AND published_at IS NULL')
     db.execute('CREATE UNIQUE INDEX IF NOT EXISTS hosted_inbox_path ON hosted_videos(inbox_path) WHERE inbox_path IS NOT NULL')
     db.execute("CREATE UNIQUE INDEX IF NOT EXISTS hosted_external_url ON hosted_videos(external_video_url) WHERE external_video_url IS NOT NULL AND state='ready'")
@@ -108,6 +108,7 @@ def expire_bin():
 
 
 def create(item):
+    item={'subtitle_height':10,**item}
     keys=tuple(item)
     with connect() as db:
         db.execute('INSERT INTO hosted_videos ('+','.join(keys)+') VALUES ('+','.join('?' for _ in keys)+')',tuple(item.values()))
