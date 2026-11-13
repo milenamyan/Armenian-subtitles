@@ -173,7 +173,7 @@
   video.addEventListener('waiting',()=>{if(!renewing&&!playerHidden)message('Բեռնվում է տեսանյութի հաջորդ հատվածը…');});
   video.addEventListener('playing',()=>{if(!playerHidden&&!statusError)message(direct?($('watch-subtitles')?.disabled?'Playing video.':'Playing with subtitles.'):'');});
   video.addEventListener('canplay',()=>{if(!inline&&!playerHidden&&!statusError)message('');});
-  video.addEventListener('error',()=>{if(!playerHidden&&mediaAssigned&&video.error)message('Չհաջողվեց նվագարկել տեսանյութը։ Ստուգիր կապը և սեղմիր «Կրկին միացնել»։ Պատճառը կարող է լինել նաև չաջակցվող ձևաչափը կամ պահոցի CORS կարգավորումը։',true);});
+  video.addEventListener('error',()=>{if(!playerHidden&&mediaAssigned&&video.error)message('Չհաջողվեց նվագարկել տեսանյութը։ Ստուգիր կապը և թարմացրու էջը։ Պատճառը կարող է լինել նաև չաջակցվող ձևաչափը կամ պահոցի CORS կարգավորումը։',true);});
   track.addEventListener('load',subtitles);
   track.addEventListener('error',()=>{if(!playerHidden&&captionsAssigned&&track.readyState===3)message('Հայերեն ենթագրերը չեն բեռնվել։ Ստուգիր կապը կամ խնդրիր սեփականատիրոջը ստուգել պահոցի CORS-ը։',true);});
   $('watch-speed')?.addEventListener('change',()=>{video.playbackRate=Number($('watch-speed').value);});

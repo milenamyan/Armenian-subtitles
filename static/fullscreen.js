@@ -6,7 +6,10 @@
   const frame=document.createElement('div');
   frame.className='player-frame';
   video.before(frame);
-  frame.append(video);
+  const surface=document.createElement('div');
+  surface.className='player-surface';
+  frame.append(surface);
+  surface.append(video);
   const height=document.getElementById('watch-subtitle-up')?.parentElement;
   if(height)frame.append(height);
   const controls=document.getElementById('watch-controls');
@@ -14,16 +17,24 @@
   let button=document.getElementById('watch-fullscreen')||document.getElementById('fullscreen');
   if(!button){
     button=document.createElement('button');
-    button.type='button';button.className='secondary';
-    frame.append(button);
+    button.type='button';
   }
-  const enterLabel=button.textContent||'Լիաէկրան';
+  button.className='player-fullscreen-toggle';
+  surface.append(button);
+  const expandIcon='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg>';
+  const collapseIcon='<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 8h5V3m8 0v5h5M8 21v-5H3m18 0h-5v5"/></svg>';
+  function label(active){
+    const text=active?'Փակել լիաէկրանը':'Լիաէկրան';
+    button.textContent='';button.innerHTML=active?collapseIcon:expandIcon;
+    button.setAttribute('aria-label',text);button.setAttribute('title',text);
+    button.setAttribute('aria-pressed',String(active));
+  }
+  label(false);
   let expanded=false,previousOverflow='';
   function update(active){
     expanded=active;
     frame.classList.toggle('player-expanded',active);
-    button.textContent=active?'Փակել լիաէկրանը':enterLabel;
-    button.setAttribute('aria-pressed',String(active));
+    label(active);
     if(active){previousOverflow=document.body.style.overflow;document.body.style.overflow='hidden';}
     else document.body.style.overflow=previousOverflow;
   }

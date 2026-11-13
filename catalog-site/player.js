@@ -6,7 +6,6 @@
   function message(text){$('watch-status').textContent=text;$('watch-status').hidden=!text;}
   function subtitles(){if(track.track)track.track.mode=$('subtitle-choice').value==='hy'?'showing':'disabled';}
   function save(){if(ready&&!video.seeking)progress.save(id,video.currentTime,video.duration);}
-  function restartButton(){$('restart').hidden=!progress.read(id,video.duration);}
   async function load(){
     const token=++attempt,position=ready?video.currentTime:null;
     save();ready=false;captionError=false;video.pause();message('Բեռնվում է տեսանյութը…');
@@ -29,7 +28,7 @@
       if(token!==attempt)return;
       const saved=progress.read(id,video.duration),target=position??saved?.position??0;
       if(Number.isFinite(video.duration)&&target>0)video.currentTime=Math.min(target,Math.max(0,video.duration-.1));
-      ready=true;lastSave=Date.now();video.playbackRate=Number($('speed').value);progress.rememberDuration(id,video.duration);restartButton();subtitles();if(!captionError)message('');
+      ready=true;lastSave=Date.now();video.playbackRate=Number($('speed').value);progress.rememberDuration(id,video.duration);subtitles();if(!captionError)message('');
     },{once:true});
     video.src=item.video_url;video.hidden=false;$('watch-controls').hidden=false;video.load();
   }
@@ -39,11 +38,9 @@
   // Reflect native mobile caption-menu choices without forcing captions back on.
   video.textTracks.addEventListener?.('change',()=>{if(track.track)$('subtitle-choice').value=track.track.mode==='showing'?'hy':'off';});
   $('speed').addEventListener('change',()=>{video.playbackRate=Number($('speed').value);});
-  $('restart').addEventListener('click',()=>{progress.clear(id);video.currentTime=0;restartButton();});
-  $('retry').addEventListener('click',()=>{if(item)void load();});
   video.addEventListener('timeupdate',()=>{if(Date.now()-lastSave>=5000){save();lastSave=Date.now();}});
   video.addEventListener('pause',save);video.addEventListener('seeked',save);
-  video.addEventListener('ended',()=>{progress.clear(id);restartButton();});
+  video.addEventListener('ended',()=>{progress.clear(id);});
   video.addEventListener('waiting',()=>{if(!captionError)message('Բեռնվում է տեսանյութի հաջորդ հատվածը…');});
   video.addEventListener('playing',()=>{if(!captionError)message('');});
   video.addEventListener('error',()=>message('Տեսանյութը չի բեռնվել։ Ստուգիր տեսանյութի հղումը, կապը և R2 CORS կարգավորումը։'));
