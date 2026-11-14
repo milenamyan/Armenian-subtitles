@@ -41,6 +41,11 @@ https://developers.cloudflare.com/r2/buckets/cors/
 
 ## Add, rename or remove a film
 
+The public catalog and watch pages include the Google Analytics tag
+`G-4WL5DHPQYF`. After deployment, view visitor reports in that Google Analytics
+property and use Realtime to check a new visit. The separate local Python app
+does not include this tag. Film/library exports preserve the tag in the HTML.
+
 Use your local HaySub owner page as the source of truth. With
 `HAYSUB_STATIC_CATALOG_SYNC=1` in the local `.env`, these actions automatically
 update `catalog-site/catalog.json` and its public cover images:
