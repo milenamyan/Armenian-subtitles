@@ -104,7 +104,7 @@ async def worker(job):
             try:
                 result = await asyncio.wait_for(translate(chunk, context), timeout=CHUNK_TIMEOUT)
             except translation.TemporaryTranslationError:
-                delay = 3
+                delay = 60
                 job.update(phase='retrying', retry_at=time.monotonic() + delay)
                 if job.get('file_identity'):
                     storage.save_file_job(job)
