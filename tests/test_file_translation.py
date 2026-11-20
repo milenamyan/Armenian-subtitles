@@ -136,7 +136,7 @@ def test_temporary_failures_keep_retrying_and_preserve_completed_chunks(monkeypa
     monkeypatch.setattr(main, 'translate', stub)
     monkeypatch.setattr(main.asyncio, 'sleep', sleep)
     asyncio.run(main.worker(job))
-    assert delays == [30, 60, 120, 120, 30]
+    assert delays == [3, 3, 3, 3, 3]
     assert calls == [1, 13, 13, 13, 13, 13, 25, 25]
     assert len(job['translated']) == 25 and job['phase'] == 'ready'
     assert not job['running'] and not job['error'] and job['retry_at'] is None

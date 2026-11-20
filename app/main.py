@@ -87,7 +87,6 @@ async def worker(job):
     job['translation_start_completed'] = len(job['translated'])
     job['error'] = ''
     job['phase'] = 'translating'
-    temporary_failures = 0
     try:
         cues = job['cues']
         while True:
@@ -105,15 +104,13 @@ async def worker(job):
             try:
                 result = await asyncio.wait_for(translate(chunk, context), timeout=CHUNK_TIMEOUT)
             except translation.TemporaryTranslationError:
-                temporary_failures += 1
-                delay = (30, 60, 120)[min(temporary_failures - 1, 2)]
+                delay = 3
                 job.update(phase='retrying', retry_at=time.monotonic() + delay)
                 if job.get('file_identity'):
                     storage.save_file_job(job)
                 await asyncio.sleep(delay)
                 job.update(phase='translating', retry_at=None)
                 continue
-            temporary_failures = 0
             job['translated'].update(result)
             if job.get('file_identity'):
                 storage.save_file_job(job)
