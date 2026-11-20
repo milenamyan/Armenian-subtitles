@@ -149,14 +149,14 @@ async def translate(cues, context):
         raise ValueError('Set GEMINI_API_KEY and GEMINI_MODEL in .env, then restart. Original subtitle playback is available.')
     correction = ''
     attempts = {cue['id']: 0 for cue in cues}
-    single_cue_mode = False
+    repair_size = len(cues)
     async with genai.Client(api_key=key, http_options=types.HttpOptions(timeout=45000, retry_options=types.HttpRetryOptions(attempts=1))).aio as client:
         # Every target gets at most three attempts. If a batch has bad structure,
-        # stop repeating that batch and repair one cue at a time. The caller's
+        # halve the repair batch instead of repeating the same failing batch. The caller's
         # overall chunk timeout also bounds this work, and partial cache survives it.
         while len(completed) < len(cues):
             pending = [cue for cue in cues if str(cue['id']) not in completed]
-            target = pending[:1] if single_cue_mode else pending
+            target = pending[:repair_size]
             target_ids = {cue['id'] for cue in target}
             for cue in target:
                 attempts[cue['id']] += 1
@@ -186,7 +186,7 @@ async def translate(cues, context):
                             storage.save_cache(partial_key, completed)
                     structural = not isinstance(exc, PartialTranslationError)
                     if structural and len(target) > 1:
-                        single_cue_mode = True
+                        repair_size = min(repair_size, max(1, len(target) // 2))
                     reason = (str(exc) if isinstance(exc, (PartialTranslationError, CueIDError)) or type(exc) is ValueError
                               else 'The response did not match the subtitle JSON format.')
                     correction = '\nThe previous attempt failed validation: ' + reason + '\nOnly the remaining failed cues are targets now. Return each target exactly once. Context is not a target.'
@@ -204,12 +204,12 @@ async def translate(cues, context):
                         continue
                     raise ValueError('Gemini translation timed out after three attempts. Please retry translation; completed subtitles are saved.') from None
                 code = getattr(exc, 'code', None)
-                if attempt == 2 or code not in (500, 502, 503, 504):
-                    if code:
-                        if code in (500, 502, 503, 504):
-                            raise TemporaryTranslationError(f'Gemini ծառայությունը ժամանակավորապես անհասանելի կամ ծանրաբեռնված է (HTTP {code})։ Պատրաստ թարգմանությունները պահպանված են։') from None
-                        if code == 429:
-                            raise ValueError('Gemini-ի հարցումների կամ քվոտայի սահմանաչափը հասել է (HTTP 429)։ Սպասիր, ստուգիր API-ի սահմանաչափերը և կրկնիր թարգմանությունը։') from None
-                        raise ValueError(f'Gemini հարցումը մերժվել է (HTTP {code})։ Ստուգիր բանալին և ընտրված մոդելի հասանելիությունը։') from None
-                    raise ValueError('Gemini connection failed. Check your connection and configuration; retry manually.') from None
-                await asyncio.sleep(RETRY_DELAYS[attempt])
+                # Let the worker wait one minute after a server failure instead
+                # of spending three requests in a short burst during an outage.
+                if code in (500, 502, 503, 504):
+                    raise TemporaryTranslationError(f'Gemini temporarily unavailable (HTTP {code}). Completed subtitles are saved.') from None
+                if code:
+                    if code == 429:
+                        raise ValueError('Gemini-ի հարցումների կամ քվոտայի սահմանաչափը հասել է (HTTP 429)։ Սպասիր, ստուգիր API-ի սահմանաչափերը և կրկնիր թարգմանությունը։') from None
+                    raise ValueError(f'Gemini հարցումը մերժվել է (HTTP {code})։ Ստուգիր բանալին և ընտրված մոդելի հասանելիությունը։') from None
+                raise ValueError('Gemini connection failed. Check your connection and configuration; retry manually.') from None

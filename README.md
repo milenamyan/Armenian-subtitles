@@ -45,11 +45,21 @@ UI tests passed**, including zero-Gemini cache reuse and restart recovery.
 
 Cue-ID recovery: each Gemini response schema now lists the exact target IDs and
 cue count. Missing, duplicate or reordered IDs are still rejected; a malformed
-batch switches to individual-cue repair instead of repeating that batch. Each
+batch switches to progressively smaller repair batches instead of repeating that batch. Each
 cue has at most three attempts (including the initial batch attempt), and the
-existing 165-second overall chunk deadline remains in force. Single-cue repair
+existing 165-second overall chunk deadline remains in force. Repairs
 can use more requests per chunk, but validated lines are cached individually in
 the partial cache and reused on retry. Valid completed caches are unchanged.
+
+Request efficiency: translation now uses 24 cues per batch instead of 12.
+Existing 12-cue caches and saved file progress are restored before batching;
+only missing cues are sent to Gemini. Malformed batches are halved for repair
+instead of immediately issuing one request per cue. Server errors (HTTP 500,
+502, 503, 504) return to the worker immediately and wait one minute before
+retrying, without the previous three-request burst. The shared rate limits and
+rolling daily safety budget remain unchanged. Daily-budget errors identify the
+app limit and estimate when the first usable request slot opens. Restart the
+server to apply these changes; they do not reset an already exhausted budget.
 
 Verification: **119 Python tests passed**, including malformed-ID recovery and
 bounded failure with partial-cache preservation. A bounded live Gemini request

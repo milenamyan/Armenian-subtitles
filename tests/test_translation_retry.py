@@ -70,7 +70,7 @@ def test_invalid_cue_error_identifies_the_cue(source, text):
         translation.validate_result({'cues': [{'id': 13, 'text': text}]}, [dict(id=13, source=source)])
 
 
-@pytest.mark.parametrize('code,expected_calls,fragment', [(503,3,'ժամանակավորապես'), (429,1,'սահմանաչափ'), (403,1,'մերժվել')])
+@pytest.mark.parametrize('code,expected_calls,fragment', [(503,1,'temporarily unavailable'), (429,1,'սահմանաչափ'), (403,1,'մերժվել')])
 def test_retry_is_bounded_and_errors_are_specific(tmp_path, monkeypatch, code, expected_calls, fragment):
     monkeypatch.setattr(storage, 'DB', tmp_path/'test.sqlite3')
     monkeypatch.setenv('GEMINI_API_KEY','test-only')
@@ -131,6 +131,9 @@ def test_transient_503_recovers_and_caches(tmp_path, monkeypatch):
     monkeypatch.setattr(translation.genai, 'Client', lambda **kwargs:Client())
     monkeypatch.setattr(translation.asyncio, 'sleep', sleep)
     cues = [dict(id=1,start=0,end=1,source='Hello')]
+    with pytest.raises(translation.TemporaryTranslationError, match='HTTP 503'):
+        asyncio.run(translation.translate(cues, []))
+    # The worker owns the one-minute delay before the next attempt.
     assert asyncio.run(translation.translate(cues, [])) == {'1':'Բարև'}
     assert asyncio.run(translation.translate(cues, [])) == {'1':'Բարև'}
     assert len(calls) == 2

@@ -12,6 +12,8 @@ SRT = b'1\n00:00:01,250 --> 00:00:03,500\nHello\n\n2\n00:00:04,000 --> 00:00:05,
 
 @pytest.fixture(autouse=True)
 def isolated(tmp_path, monkeypatch):
+    # Keep legacy-boundary resume scenarios; 24-cue batching has separate tests.
+    monkeypatch.setattr(main, 'CHUNK_SIZE', 12)
     monkeypatch.setattr(storage, 'DB', tmp_path / 'test.sqlite3')
     monkeypatch.setenv('GEMINI_API_KEY', 'test-key-not-sent')
     monkeypatch.setenv('GEMINI_MODEL', 'test-model')

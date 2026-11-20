@@ -1,5 +1,6 @@
 """Persistent, shared budgets for all translation jobs and repair attempts."""
 import asyncio
+import math
 import os
 import sqlite3
 import time
@@ -35,7 +36,14 @@ def reserve(model, tokens, now=None):
         db.execute('DELETE FROM gemini_requests WHERE sent <= ?', (now - 86400,))
         daily = db.execute('SELECT COUNT(*) FROM gemini_requests WHERE model=?', (model,)).fetchone()[0]
         if daily >= rpd:
-            raise QuotaBudgetError('Safe daily Gemini budget reached. Translation paused; completed subtitles are saved. Try again later.')
+            # If the configured budget was lowered, multiple reservations must
+            # expire before a new call fits. Report the first usable slot.
+            sent = db.execute('SELECT sent FROM gemini_requests WHERE model=? ORDER BY sent LIMIT 1 OFFSET ?',
+                              (model, daily - rpd)).fetchone()[0]
+            minutes = max(1, math.ceil((sent + 86400 - now) / 60))
+            raise QuotaBudgetError(f'App daily Gemini request budget reached ({rpd} requests per rolling 24 hours). '
+                                   f'This is the app safety limit, not a token balance. Completed subtitles are saved. '
+                                   f'Click Retry translation in about {minutes} minutes; more capacity opens as older requests expire.')
         recent = db.execute('SELECT sent,tokens FROM gemini_requests WHERE model=? AND sent>? ORDER BY sent',
                             (model, now - 61)).fetchall()
         if len(recent) >= rpm or sum(row[1] for row in recent) + tokens > tpm:

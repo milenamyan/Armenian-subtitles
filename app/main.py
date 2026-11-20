@@ -31,6 +31,7 @@ file_jobs = {}
 tasks = set()
 job_tasks = {}
 CHUNK_TIMEOUT = 165
+CHUNK_SIZE = 24
 
 
 @asynccontextmanager
@@ -89,8 +90,10 @@ async def worker(job):
     job['phase'] = 'translating'
     try:
         cues = job['cues']
+        # Recover both old 12-cue caches and current batches before regrouping.
+        restore_file_cache(job)
         while True:
-            chunks = [cues[i:i + 12] for i in range(0, len(cues), 12)]
+            chunks = [cues[i:i + CHUNK_SIZE] for i in range(0, len(cues), CHUNK_SIZE)]
             pending = [chunk for chunk in chunks if any(str(cue['id']) not in job['translated'] for cue in chunk)]
             if not pending:
                 break
@@ -101,6 +104,14 @@ async def worker(job):
             context = cues[max(0, first - 3):first] + cues[first + len(chunk):first + len(chunk) + 3]
             job['active_chunk'] = dict(first=chunk[0]['id'], last=chunk[-1]['id'], start=chunk[0]['start'], end=chunk[-1]['end'])
             job['chunk_started'] = time.monotonic()
+            # Carry saved progress across batch boundaries. translate() repairs
+            # only missing cues, keeping the full batch as its cache identity.
+            model = job.get('model') or os.getenv('GEMINI_MODEL', '')
+            completed, _ = translation.restore_cached(chunk, context, model)
+            completed.update({str(c['id']): job['translated'][str(c['id'])]
+                              for c in chunk if str(c['id']) in job['translated']})
+            if completed:
+                storage.save_cache(translation.cache_key(chunk, context, model) + ':partial', completed)
             try:
                 result = await asyncio.wait_for(translate(chunk, context), timeout=CHUNK_TIMEOUT)
             except translation.TemporaryTranslationError:
@@ -318,14 +329,20 @@ def restore_file_state(saved):
 def restore_file_cache(job):
     cues=job['cues']
     info=dict(cache_cues=0,compatible_cache_cues=0,silent_cues=0)
-    for first in range(0,len(cues),12):
-        chunk=cues[first:first+12]
-        context=cues[max(0,first-3):first]+cues[first+len(chunk):first+len(chunk)+3]
-        restored,counts=translation.restore_cached(chunk,context,job['model'])
-        for key,value in restored.items():
-            job['translated'].setdefault(key,value)
-        for name in info:
-            info[name]+=counts[name]
+    seen=set()
+    for size in dict.fromkeys((12, CHUNK_SIZE)):
+        for first in range(0,len(cues),size):
+            chunk=cues[first:first+size]
+            context=cues[max(0,first-3):first]+cues[first+len(chunk):first+len(chunk)+3]
+            restored,counts=translation.restore_cached(chunk,context,job.get('model') or os.getenv('GEMINI_MODEL',''))
+            new_ids=set(restored)-seen
+            silent=sum(is_music_only(c['source']) for c in chunk if str(c['id']) in new_ids)
+            info['silent_cues']+=silent
+            info['cache_cues']+=len(new_ids)-silent
+            info['compatible_cache_cues']+=min(counts['compatible_cache_cues'],len(new_ids)-silent)
+            seen.update(restored)
+            for key,value in restored.items():
+                job['translated'].setdefault(key,value)
     job.update(info,restored_cues=len(job['translated']))
 
 
@@ -339,7 +356,7 @@ def file_status(identity, job):
             seconds_per_cue = (time.monotonic() - job['translation_started']) / gained
             # Account for pacing even before a full minute of requests has passed.
             rpm = translation_limits(job.get('model') or os.getenv('GEMINI_MODEL', ''))[0]
-            seconds_per_cue = max(seconds_per_cue, 61 / rpm / 12)
+            seconds_per_cue = max(seconds_per_cue, 61 / rpm / CHUNK_SIZE)
             eta = max(1, math.ceil(seconds_per_cue * (len(job['cues']) - completed)))
     return dict(id=identity, filename=job['filename'], total=len(job['cues']),
                 completed=completed, running=job['running'], ready=ready, phase=job['phase'],

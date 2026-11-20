@@ -143,6 +143,7 @@ def test_bad_duration_identifies_original_cue():
 
 def test_stalled_second_chunk_stops_and_preserves_completed_cues(monkeypatch):
     from app import main
+    monkeypatch.setattr(main, 'CHUNK_SIZE', 12)
     cues = [dict(id=i+1, start=i*2, end=i*2+2, source='Hello') for i in range(24)]
     job = main.new_job('dQw4w9WgXcQ', cues)
     entered = asyncio.Event()

@@ -5,6 +5,12 @@ import pytest
 from app import storage, translation
 
 
+@pytest.fixture(autouse=True)
+def generous_test_budget(monkeypatch):
+    # Exercise repair behavior without real pacing waits; quotas have their own tests.
+    monkeypatch.setattr('app.rate_limits.limits', lambda model: (1000, 1000, 10000000))
+
+
 @pytest.mark.parametrize('problem',['missing','duplicate','reordered','malformed'])
 def test_bad_batch_ids_fall_back_to_individual_cues_without_accepting_bad_batch(tmp_path,monkeypatch,problem):
     monkeypatch.setattr(storage,'DB',tmp_path/'test.sqlite3')

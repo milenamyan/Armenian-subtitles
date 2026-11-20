@@ -37,3 +37,15 @@ def test_concurrent_reservations_cannot_exceed_budget(budget):
 def test_oversized_request_is_blocked(budget):
     with pytest.raises(rate_limits.QuotaBudgetError, match='token'):
         rate_limits.reserve('model', 101, now=100)
+
+
+def test_daily_message_reports_app_limit_and_first_usable_slot(budget, monkeypatch):
+    for now in (100, 200, 300):
+        assert rate_limits.reserve('model', 1, now=now) == 0
+    monkeypatch.setattr(rate_limits, 'limits', lambda model: (2, 2, 100))
+    with pytest.raises(rate_limits.QuotaBudgetError, match=r'App daily.*2 requests.*1439 minutes'):
+        rate_limits.reserve('model', 1, now=300)
+    # Expiring only the first reservation still leaves the lowered budget full.
+    with pytest.raises(rate_limits.QuotaBudgetError):
+        rate_limits.reserve('model', 1, now=86501)
+    assert rate_limits.reserve('model', 1, now=86601) == 0
