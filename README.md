@@ -61,6 +61,17 @@ rolling daily safety budget remain unchanged. Daily-budget errors identify the
 app limit and estimate when the first usable request slot opens. Restart the
 server to apply these changes; they do not reset an already exhausted budget.
 
+When switching to a key from a different Google Cloud project, register the
+active key's project once using the project ID shown in Google AI Studio:
+`.venv/Scripts/python.exe scripts/register_gemini_project.py PROJECT_ID`.
+Restart the server after changing `.env`. Registration stores only a SHA-256
+key fingerprint and project ID in SQLite, never the API key. Switching back to
+a registered key automatically selects its project's existing budget. Keys
+registered to the same project share request and token budgets. Unregistered
+keys use the original legacy budget; creating or rotating a key alone does not
+clear that history. Project IDs are supplied by the owner, not verified with
+Google, and registration makes no API call or guarantee of Google capacity.
+
 Verification: **119 Python tests passed**, including malformed-ID recovery and
 bounded failure with partial-cache preservation. A bounded live Gemini request
 using an original test sentence confirmed that the configured model accepts the
